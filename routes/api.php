@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TestCaseController;
+use App\Http\Controllers\TestStepsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/test-case', [TestCaseController::class, 'postTestCase']);
+Route::post('/test-step', [TestStepsController::class, 'postTestStep']);
+

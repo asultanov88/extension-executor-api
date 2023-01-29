@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\TestCaseTestStepOrder;
 
 class TestCase extends Model
 {
@@ -16,7 +17,7 @@ class TestCase extends Model
         'CreatedBy',
         'Deleted',
     ];
-    public function testSteps(){
-        return $this->hasMany(TestStep::class, 'TestCaseId', 'TestCaseId');
+    public function testStepsOrder(){
+        return $this->hasMany(TestCaseTestStepOrder::class, 'TestCaseId', 'TestCaseId');
     }
 }
