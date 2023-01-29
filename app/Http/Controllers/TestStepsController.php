@@ -27,15 +27,15 @@ class TestStepsController extends Controller
             $newTestStepId = $testStep->TestStepId;
 
             // Get the last test step order previously created for the test case.
-            $testStepLastOrder = (int)TestCaseTestStepOrder::where('TestCaseId','=',$request['testCaseId'])
+            $testStepLastOrder = TestCaseTestStepOrder::where('TestCaseId','=',$request['testCaseId'])
                                 ->orderBy('test_case_test_step_orders.Order','DESC')
-                                ->first()['Order'];
+                                ->first();
 
             // Insert the new step order number for the new test step. The last order number is incremented.
             $newTestCaseTestStepOrder = new TestCaseTestStepOrder();
             $newTestCaseTestStepOrder['TestCaseId'] = $request['testCaseId'];
             $newTestCaseTestStepOrder['TestStepId'] = $newTestStepId;
-            $newTestCaseTestStepOrder['Order'] = $testStepLastOrder+1;
+            $newTestCaseTestStepOrder['Order'] = $testStepLastOrder ? (int)$testStepLastOrder['Order'] + 1 : 1;
             $newTestCaseTestStepOrder->save();
 
             // Pull the test case object with all children for return.
