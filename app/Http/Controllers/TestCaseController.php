@@ -15,9 +15,9 @@ class TestCaseController extends Controller
         ]);
         try {
             $testCase = new TestCase();
-            $testCase['Title'] = $request['title'];
+            $testCase['title'] = $request['title'];
             $testCase->save();
-            $newTestCase = TestCase::where('TestCaseId','=',$testCase->TestCaseId)->first();
+            $newTestCase = TestCase::where('testCaseId','=',$testCase->testCaseId)->first();
             
             return response()->
             json(['result' => $newTestCase], 200);

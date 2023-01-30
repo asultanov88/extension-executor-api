@@ -21,18 +21,18 @@ class TestCaseSeeder extends Seeder
         TestCase::truncate();
         $testCases = [
             [
-                'TestCaseId'=>1,
-                'Title'=>'Test case 1',
-                'CreatedBy'=>1,
-                'Deleted'=>0,
+                'testCaseId'=>1,
+                'title'=>'Test case 1',
+                'createdBy'=>1,
+                'deleted'=>0,
                 'created_at'=>Carbon::now(),
                 'updated_at'=>Carbon::now(),
             ],
             [
-                'TestCaseId'=>2,
-                'Title'=>'Test case 2',
-                'CreatedBy'=>2,
-                'Deleted'=>0,
+                'testCaseId'=>2,
+                'title'=>'Test case 2',
+                'createdBy'=>2,
+                'deleted'=>0,
                 'created_at'=>Carbon::now(),
                 'updated_at'=>Carbon::now(),
             ]

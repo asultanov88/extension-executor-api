@@ -14,11 +14,11 @@ class CreateTestCaseTestStepOrdersTable extends Migration
     public function up()
     {
         Schema::create('test_case_test_step_orders', function (Blueprint $table) {
-            $table->foreignId('TestCaseId')->references('TestCaseId')->on('test_cases');
-            $table->foreignId('TestStepId')->references('TestStepId')->on('test_steps');
-            $table->integer('Order');
+            $table->foreignId('testCaseId')->references('testCaseId')->on('test_cases');
+            $table->foreignId('testStepId')->references('testStepId')->on('test_steps');
+            $table->integer('order');
             // TestCaseId and Order has a unique constraint.
-            $table->unique(['TestCaseId', 'Order']); 
+            $table->unique(['testCaseId', 'order']); 
             $table->timestamps();
         });
     }

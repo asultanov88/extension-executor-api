@@ -9,16 +9,16 @@ class TestStep extends Model
 {
     use HasFactory;
     protected $table='test_steps';
-    protected $primaryKey = 'TestStepId';
+    protected $primaryKey = 'testStepId';
     protected $fillable=[
-        'TestStepId',
-        'Description',
-        'Expected',
-        'TestCaseId',
-        'Deleted',
+        'testStepId',
+        'description',
+        'expected',
+        'testCaseId',
+        'deleted',
     ];
     public function testCase(){
-        return $this->belongsTo(TestCase::class, 'TestCaseId');
+        return $this->belongsTo(TestCase::class, 'testCaseId');
     }
 
 }

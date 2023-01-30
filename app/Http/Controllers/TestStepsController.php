@@ -20,38 +20,38 @@ class TestStepsController extends Controller
         try {         
             // Save the new test step. 
             $testStep = new TestStep();
-            $testStep['Description'] = $request['description'];
-            $testStep['Expected'] = $request['expected'];
-            $testStep['TestCaseId'] = $request['testCaseId'];
+            $testStep['description'] = $request['description'];
+            $testStep['expected'] = $request['expected'];
+            $testStep['testCaseId'] = $request['testCaseId'];
             $testStep->save();
-            $newTestStepId = $testStep->TestStepId;
+            $newTestStepId = $testStep->testStepId;
 
             // Get the last test step order previously created for the test case.
-            $testStepLastOrder = TestCaseTestStepOrder::where('TestCaseId','=',$request['testCaseId'])
-                                ->orderBy('test_case_test_step_orders.Order','DESC')
+            $testStepLastOrder = TestCaseTestStepOrder::where('testCaseId','=',$request['testCaseId'])
+                                ->orderBy('test_case_test_step_orders.order','DESC')
                                 ->first();
 
             // Insert the new step order number for the new test step. The last order number is incremented.
             $newTestCaseTestStepOrder = new TestCaseTestStepOrder();
-            $newTestCaseTestStepOrder['TestCaseId'] = $request['testCaseId'];
-            $newTestCaseTestStepOrder['TestStepId'] = $newTestStepId;
-            $newTestCaseTestStepOrder['Order'] = $testStepLastOrder ? (int)$testStepLastOrder['Order'] + 1 : 1;
+            $newTestCaseTestStepOrder['testCaseId'] = $request['testCaseId'];
+            $newTestCaseTestStepOrder['testStepId'] = $newTestStepId;
+            $newTestCaseTestStepOrder['order'] = $testStepLastOrder ? (int)$testStepLastOrder['order'] + 1 : 1;
             $newTestCaseTestStepOrder->save();
 
             // Pull the test case object with all children for return.
-            $testCase = TestCase::where('TestCaseId','=',$request['testCaseId'])->first();
+            $testCase = TestCase::where('testCaseId','=',$request['testCaseId'])->first();
             $modifiedTestStepOrders = TestCaseTestStepOrder::with('testStep')
-                                    ->where('TestCaseId','=',$request['testCaseId'])
-                                    ->orderBy('test_case_test_step_orders.Order','ASC')
+                                    ->where('testCaseId','=',$request['testCaseId'])
+                                    ->orderBy('test_case_test_step_orders.order','ASC')
                                     ->get(
                                         [
-                                            'TestStepId',
-                                            'Order'
+                                            'testStepId',
+                                            'order'
                                         ]
                                     )
                                     ->toArray();
 
-            $testCase['TestStepOrder'] = $modifiedTestStepOrders;   
+            $testCase['testStepOrder'] = $modifiedTestStepOrders;   
             
             return response()->
             json(['result' => $testCase], 200);

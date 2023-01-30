@@ -14,11 +14,11 @@ class CreateTestStepsTable extends Migration
     public function up()
     {
         Schema::create('test_steps', function (Blueprint $table) {
-            $table->id('TestStepId')->index();
-            $table->longtext('Description');
-            $table->longtext('Expected');
-            $table->foreignId('TestCaseId')->references('TestCaseId')->on('test_cases');
-            $table->boolean('Deleted')->default('0');
+            $table->id('testStepId')->index();
+            $table->longtext('description');
+            $table->longtext('expected');
+            $table->foreignId('testCaseId')->references('testCaseId')->on('test_cases');
+            $table->boolean('deleted')->default('0');
             $table->timestamps();
         });
     }

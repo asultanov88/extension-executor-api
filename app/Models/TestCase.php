@@ -10,14 +10,14 @@ class TestCase extends Model
 {
     use HasFactory;
     protected $table='test_cases';
-    protected $primaryKey = 'TestCaseId';
+    protected $primaryKey = 'testCaseId';
     protected $fillable=[
-        'TestCaseId',
-        'Title',
-        'CreatedBy',
-        'Deleted',
+        'testCaseId',
+        'title',
+        'createdBy',
+        'deleted',
     ];
     public function testStepsOrder(){
-        return $this->hasMany(TestCaseTestStepOrder::class, 'TestCaseId', 'TestCaseId');
+        return $this->hasMany(TestCaseTestStepOrder::class, 'testCaseId', 'testCaseId');
     }
 }

@@ -22,23 +22,23 @@ class TestCaseTestStepOrderSeeder extends Seeder
         TestCaseTestStepOrder::truncate();
         $testCaseTestStepOrders=[
             [
-                'TestCaseId'=>1,
-                'TestStepId'=>1,
-                'Order'=>1,
+                'testCaseId'=>1,
+                'testStepId'=>1,
+                'order'=>1,
                 'created_at'=>Carbon::now(),
                 'updated_at'=>Carbon::now(),
             ],
             [
-                'TestCaseId'=>1,
-                'TestStepId'=>2,
-                'Order'=>2,
+                'testCaseId'=>1,
+                'testStepId'=>2,
+                'order'=>2,
                 'created_at'=>Carbon::now(),
                 'updated_at'=>Carbon::now(),
             ],
             [
-                'TestCaseId'=>2,
-                'TestStepId'=>3,
-                'Order'=>1,
+                'testCaseId'=>2,
+                'testStepId'=>3,
+                'order'=>1,
                 'created_at'=>Carbon::now(),
                 'updated_at'=>Carbon::now(),
             ],

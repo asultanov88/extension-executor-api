@@ -14,10 +14,10 @@ class CreateTestCasesTable extends Migration
     public function up()
     {
         Schema::create('test_cases', function (Blueprint $table) {
-            $table->id('TestCaseId')->index();
-            $table->string('Title', 500);
-            $table->integer('CreatedBy')->nullable();
-            $table->boolean('Deleted')->default('0');
+            $table->id('testCaseId')->index();
+            $table->string('title', 500);
+            $table->integer('createdBy')->nullable();
+            $table->boolean('deleted')->default('0');
             $table->timestamps();
         });
     }

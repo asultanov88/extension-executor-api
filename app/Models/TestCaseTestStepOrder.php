@@ -10,11 +10,11 @@ class TestCaseTestStepOrder extends Model
     use HasFactory;
     protected $table='test_case_test_step_orders';
     protected $fillable=[
-        'TestCaseId',
-        'TestStepId',
-        'Order',
+        'testCaseId',
+        'testStepId',
+        'order',
     ];
     public function testStep(){
-        return $this->hasOne(TestStep::class, 'TestStepId', 'TestStepId');
+        return $this->hasOne(TestStep::class, 'testStepId', 'testStepId');
     }
 }
