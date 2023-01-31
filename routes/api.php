@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestCaseController;
 use App\Http\Controllers\TestStepsController;
+use App\Http\Controllers\TestCaseTestStepOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,4 +23,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/test-case', [TestCaseController::class, 'postTestCase']);
 Route::post('/test-step', [TestStepsController::class, 'postTestStep']);
+Route::post('/step-order-change', [TestCaseTestStepOrderController::class, 'postStepOrder']);
 

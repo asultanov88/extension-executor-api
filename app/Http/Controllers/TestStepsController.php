@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\TestStep;
 use App\Models\TestCaseTestStepOrder;
 use App\Models\TestCase;
+use App\Http\Controllers\TestCaseController;
 use Exception;
 
 class TestStepsController extends Controller
@@ -14,7 +15,7 @@ class TestStepsController extends Controller
         $request->validate([
             'description'=>'required',
             'expected'=>'required',
-            'testCaseId'=>'required|integer|exists:test_cases,TestCaseId',
+            'testCaseId'=>'required|integer|exists:test_cases,testCaseId',
             ]);
 
         try {         
@@ -39,22 +40,11 @@ class TestStepsController extends Controller
             $newTestCaseTestStepOrder->save();
 
             // Pull the test case object with all children for return.
-            $testCase = TestCase::where('testCaseId','=',$request['testCaseId'])->first();
-            $modifiedTestStepOrders = TestCaseTestStepOrder::with('testStep')
-                                    ->where('testCaseId','=',$request['testCaseId'])
-                                    ->orderBy('test_case_test_step_orders.order','ASC')
-                                    ->get(
-                                        [
-                                            'testStepId',
-                                            'order'
-                                        ]
-                                    )
-                                    ->toArray();
-
-            $testCase['testStepOrder'] = $modifiedTestStepOrders;   
+            $testCase = TestCaseController::getTestCaseDetailsById($request['testCaseId']);
             
             return response()->
             json(['result' => $testCase], 200);
+            
         } catch (Exception $e) {
             return response()->json(
                 env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to create test step.']], 500

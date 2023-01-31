@@ -27,4 +27,23 @@ class TestCaseController extends Controller
               );        
         }
     }
+
+    /**
+     * Gets test case with nested objects by test case id.
+     */
+    public function getTestCaseDetailsById($testCaseId){
+        $testCase = TestCase::where('testCaseId','=',$testCaseId)->first();
+        $modifiedTestStepOrders = TestCaseTestStepOrder::with('testStep')
+                                ->where('testCaseId','=',$testCaseId)
+                                ->orderBy('test_case_test_step_orders.order','ASC')
+                                ->get(
+                                    [
+                                        'testStepId',
+                                        'order'
+                                    ]
+                                )
+                                ->toArray();
+        $testCase['testStepOrder'] = $modifiedTestStepOrders; 
+        return $testCase;
+    }
 }
