@@ -24,4 +24,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/test-case', [TestCaseController::class, 'postTestCase']);
 Route::post('/test-step', [TestStepsController::class, 'postTestStep']);
 Route::post('/step-order-change', [TestCaseTestStepOrderController::class, 'postStepOrder']);
+Route::get('/test-case', [TestCaseController::class, 'getTestCase']);
 

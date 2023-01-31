@@ -28,6 +28,23 @@ class TestCaseController extends Controller
         }
     }
 
+    public function getTestCase(Request $request){
+        $request->validate([
+            'testCaseId'=>'required|integer|exists:test_cases,testCaseId',
+        ]);
+
+        try {
+            $result = $this->getTestCaseDetailsById($request['testCaseId']);
+            return response()->
+            json(['result' => $result], 200);
+            
+        } catch (Exception $e) {
+            return response()->json(
+                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to create project.']], 500
+              );        
+        }
+    }
+
     /**
      * Gets test case with nested objects by test case id.
      */
