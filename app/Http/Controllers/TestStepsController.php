@@ -11,6 +11,83 @@ use Exception;
 
 class TestStepsController extends Controller
 {
+    public function deleteTestStep(Request $request){
+        $request->validate([
+            'testCaseId'=>'required|integer|exists:test_cases,testCaseId',
+            'testStepId'=>'required|integer|exists:test_steps,testStepId',
+            ]);
+
+        try {
+            $deleteStepOrder = TestCaseTestStepOrder::where('testCaseId','=',$request['testCaseId'])
+            ->where('testStepId','=',$request['testStepId'])
+            ->first();
+
+            if($deleteStepOrder){
+                $deleteStepOrder->delete();
+            }
+            
+            // Pull the test case object with all children for return.
+            $testCase = TestCaseController::getTestCaseDetailsById($request['testCaseId']);
+
+            return response()->
+            json(['result' => $testCase], 200);
+
+        } catch (Exception $e) {
+            return response()->json(
+                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to create test step.']], 500
+            );        
+        }
+    }
+
+    public function patchTestStep(Request $request){
+        $request->validate([
+            'description'=>'required',
+            'expected'=>'required',
+            'testCaseId'=>'required|integer|exists:test_cases,testCaseId',
+            'testStepId'=>'required|integer|exists:test_steps,testStepId',
+            ]);
+
+        try {
+            $testStep = TestStep::where('testStepId','=',$request['testStepId'])->first();
+            // Update the test step if the estCaseId belongs to its parent test case.
+            if($testStep['testCaseId'] == $request['testCaseId']){
+                $testStep->update([
+                    'description' => $request['description'],
+                    'expected' => $request['expected']
+                ]);
+            }else{
+                // Create a new test step, then reassign it to the test case step order if the testCaseId 
+                // does not belong to its parent test case.
+                $newTestStep = new TestStep();
+                $newTestStep['testCaseId'] = $request['testCaseId'];
+                $newTestStep['description'] = $request['description'];
+                $newTestStep['expected'] = $request['expected'];
+                $newTestStep->save();
+
+                $updateStepOrder = TestCaseTestStepOrder::where('testCaseId','=',$request['testCaseId'])
+                    ->where('testStepId','=',$request['testStepId'])
+                    ->first();
+
+                if($updateStepOrder){
+                    $updateStepOrder->update([
+                        'testStepId' => $newTestStep->testStepId
+                    ]);
+                }          
+            }
+
+            // Pull the test case object with all children for return.
+            $testCase = TestCaseController::getTestCaseDetailsById($request['testCaseId']);
+    
+            return response()->
+            json(['result' => $testCase], 200);
+
+        } catch (Exception $e) {
+            return response()->json(
+                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to create test step.']], 500
+            );        
+        }
+    }
+
     public function postTestStep(Request $request){
         $request->validate([
             'description'=>'required',
@@ -44,7 +121,7 @@ class TestStepsController extends Controller
             
             return response()->
             json(['result' => $testCase], 200);
-            
+
         } catch (Exception $e) {
             return response()->json(
                 env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to create test step.']], 500

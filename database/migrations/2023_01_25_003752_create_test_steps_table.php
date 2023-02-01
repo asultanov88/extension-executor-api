@@ -18,7 +18,6 @@ class CreateTestStepsTable extends Migration
             $table->longtext('description');
             $table->longtext('expected');
             $table->foreignId('testCaseId')->references('testCaseId')->on('test_cases');
-            $table->boolean('deleted')->default('0');
             $table->timestamps();
         });
     }

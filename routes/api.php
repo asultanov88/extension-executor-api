@@ -22,7 +22,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/test-case', [TestCaseController::class, 'postTestCase']);
+Route::patch('/test-case', [TestCaseController::class, 'patchTestCase']);
 Route::post('/test-step', [TestStepsController::class, 'postTestStep']);
+Route::patch('/test-step', [TestStepsController::class, 'patchTestStep']);
+Route::delete('/test-step', [TestStepsController::class, 'deleteTestStep']);
 Route::post('/step-order-change', [TestCaseTestStepOrderController::class, 'postStepOrder']);
 Route::get('/test-case', [TestCaseController::class, 'getTestCase']);
+Route::get('/test-case-search', [TestCaseController::class, 'getTestCaseSearch']);
+
 
