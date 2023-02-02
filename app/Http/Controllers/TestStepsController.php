@@ -23,7 +23,22 @@ class TestStepsController extends Controller
             ->first();
 
             if($deleteStepOrder){
+                $deletedTestStepOrder = $deleteStepOrder['order'];
                 $deleteStepOrder->delete();
+                // Rearrage test step orders after delete.
+                $newStepOrder = TestCaseTestStepOrder::where('testCaseId','=',$request['testCaseId'])
+                ->orderBy('test_case_test_step_orders.order','ASC')
+                ->get();
+
+                if(count($newStepOrder) > 0){
+                    for ($i = 0; $i < count($newStepOrder); $i++) {
+                        $newStepOrder[$i]->update(
+                            [
+                                'order' => $i+1
+                            ]
+                        );
+                    }
+                }          
             }
             
             // Pull the test case object with all children for return.
