@@ -63,31 +63,22 @@ class TestStepsController extends Controller
             ]);
 
         try {
-            $testStep = TestStep::where('testStepId','=',$request['testStepId'])->first();
-            // Update the test step if the estCaseId belongs to its parent test case.
-            if($testStep['testCaseId'] == $request['testCaseId']){
-                $testStep->update([
-                    'description' => $request['description'],
-                    'expected' => $request['expected']
+            // Create a new test step, then reassign it to the test case step order.
+            // We do not update the existing test steps.
+            $newTestStep = new TestStep();
+            $newTestStep['testCaseId'] = $request['testCaseId'];
+            $newTestStep['description'] = $request['description'];
+            $newTestStep['expected'] = $request['expected'];
+            $newTestStep->save();
+
+            $updateStepOrder = TestCaseTestStepOrder::where('testCaseId','=',$request['testCaseId'])
+                ->where('testStepId','=',$request['testStepId'])
+                ->first();
+
+            if($updateStepOrder){
+                $updateStepOrder->update([
+                    'testStepId' => $newTestStep->testStepId
                 ]);
-            }else{
-                // Create a new test step, then reassign it to the test case step order if the testCaseId 
-                // does not belong to its parent test case.
-                $newTestStep = new TestStep();
-                $newTestStep['testCaseId'] = $request['testCaseId'];
-                $newTestStep['description'] = $request['description'];
-                $newTestStep['expected'] = $request['expected'];
-                $newTestStep->save();
-
-                $updateStepOrder = TestCaseTestStepOrder::where('testCaseId','=',$request['testCaseId'])
-                    ->where('testStepId','=',$request['testStepId'])
-                    ->first();
-
-                if($updateStepOrder){
-                    $updateStepOrder->update([
-                        'testStepId' => $newTestStep->testStepId
-                    ]);
-                }          
             }
 
             // Pull the test case object with all children for return.
