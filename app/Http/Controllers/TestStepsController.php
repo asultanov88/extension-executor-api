@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\TestStep;
 use App\Models\TestCaseTestStepOrder;
 use App\Models\TestCase;
+use App\Models\ImportedTestCase;
 use App\Http\Controllers\TestCaseController;
 use Exception;
 
@@ -92,6 +93,39 @@ class TestStepsController extends Controller
                 env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to create test step.']], 500
             );        
         }
+    }
+
+    public function postImportedTestCase(Request $request){
+        $request->validate([    
+            'testCaseId'=>'required|integer|exists:test_cases,testCaseId',
+            'importedTestCaseId'=>'required|integer|exists:test_cases,testCaseId',
+            'order'=>'required|integer|min:1'
+            ]);
+
+        try {
+            $testCaeTestStepOrder = new TestCaseTestStepOrder();
+            $testCaeTestStepOrder['testCaseId'] = $request['testCaseId'];
+            $testCaeTestStepOrder['testStepId'] = null;
+            $testCaeTestStepOrder['order'] = $request['order'];
+            $testCaeTestStepOrder->save();
+
+            $importedTestCase = new ImportedTestCase();
+            $importedTestCase['testCaseId'] = $request['testCaseId'];
+            $importedTestCase['importedTestCaseId'] = $request['importedTestCaseId'];
+            $importedTestCase['importOrder'] = $request['order'];
+            $importedTestCase->save();
+
+             // Pull the test case object with all children for return.
+             $testCase = TestCaseController::getTestCaseDetailsById($request['testCaseId']);
+            
+             return response()->
+             json(['result' => $testCase], 200);
+ 
+         } catch (Exception $e) {
+             return response()->json(
+                 env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to create test step.']], 500
+               );        
+         }
     }
 
     public function postTestStep(Request $request){

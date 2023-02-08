@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTestCaseTestStepOrdersTable extends Migration
+class CreateImportedTestCasesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateTestCaseTestStepOrdersTable extends Migration
      */
     public function up()
     {
-        Schema::create('test_case_test_step_orders', function (Blueprint $table) {
+        Schema::create('imported_test_cases', function (Blueprint $table) {
             $table->foreignId('testCaseId')->references('testCaseId')->on('test_cases');
-            $table->foreignId('testStepId')->nullable()->references('testStepId')->on('test_steps');
-            $table->integer('order');
-            // TestCaseId and Order has a unique constraint.
-            $table->unique(['testCaseId', 'order']); 
+            $table->foreignId('importedTestCaseId')->references('testCaseId')->on('test_cases');
+            $table->integer('importOrder')->foreign('importOrder')->references('order')->on('test_case_test_step_orders');
         });
     }
 
@@ -29,6 +27,6 @@ class CreateTestCaseTestStepOrdersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('test_case_test_step_orders');
+        Schema::dropIfExists('imported_test_cases');
     }
 }

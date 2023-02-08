@@ -5,19 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TestCaseTestStepOrder extends Model
+class ImportedTestCase extends Model
 {
     use HasFactory;
-    protected $table='test_case_test_step_orders';
+    protected $table='imported_test_cases';
     protected $primaryKey = null;
     public $incrementing = false;
     public $timestamps = false;
+    protected $hidden = ['importOrder'];
     protected $fillable=[
         'testCaseId',
-        'testStepId',
-        'order',
+        'importedTestCaseId',
+        'importOrder',
     ];
-    public function testStep(){
-        return $this->hasOne(TestStep::class, 'testStepId', 'testStepId');
-    }
 }

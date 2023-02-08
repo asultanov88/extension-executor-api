@@ -104,16 +104,32 @@ class TestCaseController extends Controller
     public function getTestCaseDetailsById($testCaseId){
         $testCase = TestCase::where('testCaseId','=',$testCaseId)->first();
         $modifiedTestStepOrders = TestCaseTestStepOrder::with('testStep')
-                                ->where('testCaseId','=',$testCaseId)
+                                ->leftJoin('imported_test_cases', function($join)
+                                {
+                                    $join->on('imported_test_cases.testCaseId','=','test_case_test_step_orders.testCaseId')
+                                    ->on('imported_test_cases.importOrder','=','test_case_test_step_orders.order');
+                                })
+                                ->where('test_case_test_step_orders.testCaseId','=',$testCaseId)
                                 ->orderBy('test_case_test_step_orders.order','ASC')
-                                ->get(
-                                    [
-                                        'testStepId',
-                                        'order'
-                                    ]
-                                )
-                                ->toArray();
-        $testCase['testStepOrder'] = $modifiedTestStepOrders; 
+                                ->get();
+        $testCase['testStepOrder'] = $modifiedTestStepOrders;
+
+        // Get imported test cases.
+        $importedTestCaseIds = [];
+        foreach ($modifiedTestStepOrders as $order) {
+            if($order['importedTestCaseId'] != null){
+                array_push($importedTestCaseIds, $order['importedTestCaseId']);
+            }
+            unset($order['testCaseId']);
+            unset($order['importOrder']);
+        }
+
+        $importedTestCases = [];
+        foreach ($importedTestCaseIds as $importedTestCaseId) {
+            array_push($importedTestCases, TestCaseController::getTestCaseDetailsById($importedTestCaseId));
+        }
+        $testCase['importedTestCases'] = $importedTestCases;
+
         return $testCase;
     }
 }

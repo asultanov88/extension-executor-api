@@ -24,23 +24,17 @@ class TestCaseTestStepOrderSeeder extends Seeder
             [
                 'testCaseId'=>1,
                 'testStepId'=>1,
-                'order'=>1,
-                'created_at'=>Carbon::now(),
-                'updated_at'=>Carbon::now(),
+                'order'=>1
             ],
             [
                 'testCaseId'=>1,
                 'testStepId'=>2,
-                'order'=>2,
-                'created_at'=>Carbon::now(),
-                'updated_at'=>Carbon::now(),
+                'order'=>2
             ],
             [
                 'testCaseId'=>2,
                 'testStepId'=>3,
-                'order'=>1,
-                'created_at'=>Carbon::now(),
-                'updated_at'=>Carbon::now(),
+                'order'=>1
             ],
         ];
 
