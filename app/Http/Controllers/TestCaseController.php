@@ -9,6 +9,8 @@ use Exception;
 
 class TestCaseController extends Controller
 {
+    private static $importedTestCases = array();
+
     public function getTestCaseSearch(Request $request){
         $request->validate([
             'title'=>'required|min:2|max:500',
@@ -102,6 +104,13 @@ class TestCaseController extends Controller
      * Gets test case with nested objects by test case id.
      */
     public function getTestCaseDetailsById($testCaseId){
+        $testCase = TestCaseController::getTestCaseDetails($testCaseId);
+        // Imported test cases are stored in static variable to provide flat array.
+        $testCase['importedTestCases'] = TestCaseController::$importedTestCases;
+        return $testCase;
+    }
+
+    private function getTestCaseDetails($testCaseId){
         $testCase = TestCase::where('testCaseId','=',$testCaseId)->first();
         $modifiedTestStepOrders = TestCaseTestStepOrder::with('testStep')
                                 ->leftJoin('imported_test_cases', function($join)
@@ -124,12 +133,9 @@ class TestCaseController extends Controller
             unset($order['importOrder']);
         }
 
-        $importedTestCases = [];
         foreach ($importedTestCaseIds as $importedTestCaseId) {
-            array_push($importedTestCases, TestCaseController::getTestCaseDetailsById($importedTestCaseId));
+            array_push(TestCaseController::$importedTestCases, TestCaseController::getTestCaseDetails($importedTestCaseId));
         }
-        $testCase['importedTestCases'] = $importedTestCases;
-
         return $testCase;
     }
 }
