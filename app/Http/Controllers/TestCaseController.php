@@ -136,6 +136,7 @@ class TestCaseController extends Controller
         foreach ($importedTestCaseIds as $importedTestCaseId) {
             array_push(TestCaseController::$importedTestCases, TestCaseController::getTestCaseDetails($importedTestCaseId));
         }
+        TestCaseController::$importedTestCases = array_unique(TestCaseController::$importedTestCases);
         return $testCase;
     }
 }

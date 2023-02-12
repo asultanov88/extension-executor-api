@@ -106,12 +106,19 @@ class TestStepsController extends Controller
             // Test cases cannot import eaach other directly or indirectly, this causes infinite loop.
             $importCheck = TestCaseController::getTestCaseDetailsById($request['importedTestCaseId']);
             $check = true;
-            foreach($importCheck['importedTestCases'] as $import){
-                if($import['testCaseId'] == $request['testCaseId']){
-                    $check = false;
-                    break;
+            if($request['testCaseId'] == $request['importedTestCaseId']){
+                $check = false;
+            }
+
+            if($check){
+                foreach($importCheck['importedTestCases'] as $import){
+                    if($request['testCaseId'] == $import['testCaseId']){
+                        $check = false;
+                        break;
+                    }
                 }
             }
+            
             if(!$check){
                 return response()->json(['result' => ['message' => 'Test case cannot be imported.']], 500);
             }
