@@ -27,7 +27,7 @@ Route::post('/test-step', [TestStepsController::class, 'postTestStep']);
 Route::patch('/test-step', [TestStepsController::class, 'patchTestStep']);
 Route::delete('/test-step', [TestStepsController::class, 'deleteTestStep']);
 Route::post('/import-test-case', [TestStepsController::class, 'postImportedTestCase']);
-Route::post('/step-order-change', [TestCaseTestStepOrderController::class, 'postStepOrder']);
+Route::post('/step-order-change', [TestCaseTestStepOrderController::class, 'postStepOrderChange']);
 Route::get('/test-case', [TestCaseController::class, 'getTestCase']);
 Route::get('/test-case-search', [TestCaseController::class, 'getTestCaseSearch']);
 

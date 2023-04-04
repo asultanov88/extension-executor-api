@@ -11,6 +11,9 @@ class TestCaseController extends Controller
 {
     private static $importedTestCases = array();
 
+    /**
+     * Search for a test case by title.
+     */
     public function getTestCaseSearch(Request $request){
         $request->validate([
             'title'=>'required|min:2|max:500',
@@ -83,6 +86,9 @@ class TestCaseController extends Controller
         }
     }
 
+    /**
+     * Get test case details by test case id.
+     */
     public function getTestCase(Request $request){
         $request->validate([
             'testCaseId'=>'required|integer|exists:test_cases,testCaseId',
@@ -102,6 +108,7 @@ class TestCaseController extends Controller
 
     /**
      * Gets test case with nested objects by test case id.
+     * Used internally, not linked to API endpoint.
      */
     public function getTestCaseDetailsById($testCaseId){
         $testCase = TestCaseController::getTestCaseDetails($testCaseId);

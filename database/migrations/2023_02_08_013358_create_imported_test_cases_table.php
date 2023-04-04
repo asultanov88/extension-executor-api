@@ -17,6 +17,8 @@ class CreateImportedTestCasesTable extends Migration
             $table->foreignId('testCaseId')->references('testCaseId')->on('test_cases');
             $table->foreignId('importedTestCaseId')->references('testCaseId')->on('test_cases');
             $table->integer('importOrder')->foreign('importOrder')->references('order')->on('test_case_test_step_orders');
+            // TestCaseId and importOrder has a unique constraint.
+            $table->unique(['testCaseId', 'importOrder']); 
         });
     }
 
