@@ -9,8 +9,7 @@ class TestCaseTestStepOrder extends Model
 {
     use HasFactory;
     protected $table='test_case_test_step_orders';
-    protected $primaryKey = null;
-    public $incrementing = false;
+    protected $primaryKey = 'testCaseOrderId';
     public $timestamps = false;
     protected $fillable=[
         'testCaseId',

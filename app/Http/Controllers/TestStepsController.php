@@ -50,7 +50,7 @@ class TestStepsController extends Controller
 
         } catch (Exception $e) {
             return response()->json(
-                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to create test step.']], 500
+                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to delete test step.']], 500
             );        
         }
     }
@@ -123,23 +123,63 @@ class TestStepsController extends Controller
                 return response()->json(['result' => ['message' => 'Test case cannot be imported.']], 500);
             }
 
-            $testCaeTestStepOrder = new TestCaseTestStepOrder();
-            $testCaeTestStepOrder['testCaseId'] = $request['testCaseId'];
-            $testCaeTestStepOrder['testStepId'] = null;
-            $testCaeTestStepOrder['order'] = $request['order'];
-            $testCaeTestStepOrder->save();
+            // Check if test case already contains $request['order'].
+            $checkExistingOrder = TestCaseTestStepOrder::where('testCaseId','=',$request['testCaseId'])
+                                  ->where('order','=',$request['order'])
+                                  ->first();
+
+            // Order exists, need to update all orders of this test case.
+            if(!is_null($checkExistingOrder)){
+                // Select and store existing imported test cases in memory.
+                $importedTestCases = ImportedTestCase::where('testCaseId','=',$request['testCaseId'])
+                                     ->where('importOrder','>=',$request['order'])
+                                     ->get();
+
+                // Delete existing imported test cases to remove FK references.
+                ImportedTestCase::where('testCaseId','=',$request['testCaseId'])
+                ->where('importOrder','>=',$request['order'])
+                ->delete();
+
+                // Select all existgin test step orders (including imported test case orders).
+                $existingTestStepOrders = TestCaseTestStepOrder::where('testCaseId','=',$request['testCaseId'])
+                                          ->where('order','>=',$request['order'])
+                                          ->orderBy('test_case_test_step_orders.order','DESC')
+                                          ->get();
+
+                // increment each order to make a room for the new insert.
+                foreach ($existingTestStepOrders as $stepOrder) {
+                    $stepOrder->update([
+                        'order' => $stepOrder['order'] + 1
+                    ]);
+                }
+
+                // reinsert imported test cases by incrementing importOrder.
+                foreach ($importedTestCases as $import){ 
+                    $importedTestCase = new ImportedTestCase();
+                    $importedTestCase['testCaseId'] = $request['testCaseId'];
+                    $importedTestCase['importedTestCaseId'] = $import['importedTestCaseId'];
+                    $importedTestCase['importOrder'] = $import['importOrder'] + 1;
+                    $importedTestCase->save();
+                }
+            }
+
+            $testCaseTestStepOrder = new TestCaseTestStepOrder();
+            $testCaseTestStepOrder['testCaseId'] = $request['testCaseId'];
+            $testCaseTestStepOrder['testStepId'] = null;
+            $testCaseTestStepOrder['order'] = $request['order'];
+            $testCaseTestStepOrder->save();
 
             $importedTestCase = new ImportedTestCase();
             $importedTestCase['testCaseId'] = $request['testCaseId'];
             $importedTestCase['importedTestCaseId'] = $request['importedTestCaseId'];
             $importedTestCase['importOrder'] = $request['order'];
             $importedTestCase->save();
-
-             // Pull the test case object with all children for return.
-             $testCase = TestCaseController::getTestCaseDetailsById($request['testCaseId']);
+               
+            // Pull the test case object with all children for return.
+            $testCase = TestCaseController::getTestCaseDetailsById($request['testCaseId']);
             
-             return response()->
-             json(['result' => $testCase], 200);
+            return response()->
+            json(['result' => $testCase], 200);
  
          } catch (Exception $e) {
              return response()->json(
@@ -153,6 +193,7 @@ class TestStepsController extends Controller
             'description'=>'required',
             'expected'=>'required',
             'testCaseId'=>'required|integer|exists:test_cases,testCaseId',
+            'order'=>'required|integer|min:1',
             ]);
 
         try {         
@@ -164,16 +205,24 @@ class TestStepsController extends Controller
             $testStep->save();
             $newTestStepId = $testStep->testStepId;
 
-            // Get the last test step order previously created for the test case.
-            $testStepLastOrder = TestCaseTestStepOrder::where('testCaseId','=',$request['testCaseId'])
+            // Get the test step orders greater than $request['order'].
+            $testStepsOrder = TestCaseTestStepOrder::where('testCaseId','=',$request['testCaseId'])
+                                ->where('order','>=',$request['order'])
                                 ->orderBy('test_case_test_step_orders.order','DESC')
-                                ->first();
+                                ->get();
 
-            // Insert the new step order number for the new test step. The last order number is incremented.
+            // increment each order to make a room for the new insert.
+            foreach ($testStepsOrder as $stepOrder) {
+                $stepOrder->update([
+                    'order' => $stepOrder['order'] + 1
+                ]);
+            }
+
+            // Insert the new step order number for the new test step.
             $newTestCaseTestStepOrder = new TestCaseTestStepOrder();
             $newTestCaseTestStepOrder['testCaseId'] = $request['testCaseId'];
             $newTestCaseTestStepOrder['testStepId'] = $newTestStepId;
-            $newTestCaseTestStepOrder['order'] = $testStepLastOrder ? (int)$testStepLastOrder['order'] + 1 : 1;
+            $newTestCaseTestStepOrder['order'] = $request['order'];
             $newTestCaseTestStepOrder->save();
 
             // Pull the test case object with all children for return.

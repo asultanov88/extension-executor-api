@@ -12,7 +12,6 @@ class ImportedTestCase extends Model
     protected $primaryKey = null;
     public $incrementing = false;
     public $timestamps = false;
-    protected $hidden = ['importOrder'];
     protected $fillable=[
         'testCaseId',
         'importedTestCaseId',
