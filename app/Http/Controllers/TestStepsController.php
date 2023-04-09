@@ -15,29 +15,59 @@ class TestStepsController extends Controller
     public function deleteTestStep(Request $request){
         $request->validate([
             'testCaseId'=>'required|integer|exists:test_cases,testCaseId',
-            'testStepId'=>'required|integer|exists:test_steps,testStepId',
+            'order'=>'required|integer|min:1',
             ]);
 
         try {
             $deleteStepOrder = TestCaseTestStepOrder::where('testCaseId','=',$request['testCaseId'])
-            ->where('testStepId','=',$request['testStepId'])
-            ->first();
+                ->where('order','=',$request['order'])
+                ->first();
 
-            if($deleteStepOrder){
-                $deletedTestStepOrder = $deleteStepOrder['order'];
-                $deleteStepOrder->delete();
+            if(!is_null($deleteStepOrder)){
+                if(is_null($deleteStepOrder['testStepId'])){
+                    ImportedTestCase::where('testCaseId','=',$request['testCaseId'])
+                        ->where('importOrder','=',$request['order'])
+                        ->delete();
+                }
+
+                TestCaseTestStepOrder::where('testCaseId','=',$request['testCaseId'])
+                    ->where('order','=',$request['order'])
+                    ->delete();
+
                 // Rearrage test step orders after delete.
                 $newStepOrder = TestCaseTestStepOrder::where('testCaseId','=',$request['testCaseId'])
-                ->orderBy('test_case_test_step_orders.order','ASC')
-                ->get();
+                    ->orderBy('test_case_test_step_orders.order','ASC')
+                    ->get();
 
                 if(count($newStepOrder) > 0){
                     for ($i = 0; $i < count($newStepOrder); $i++) {
+                        $newOrderNumber = $i+1;
+                        $importedTestCase = null;
+                        if(is_null($newStepOrder[$i]['testStepId'])){
+                            $importedTestCase = ImportedTestCase::where('testCaseId','=',$request['testCaseId'])
+                                ->where('importOrder','=',$newStepOrder[$i]['order'])
+                                ->first();
+
+                            if(!is_null($importedTestCase)){
+                                ImportedTestCase::where('testCaseId','=',$request['testCaseId'])
+                                    ->where('importOrder','=',$newStepOrder[$i]['order'])
+                                    ->delete();
+                            }
+                        }
+
                         $newStepOrder[$i]->update(
                             [
-                                'order' => $i+1
+                                'order' => $newOrderNumber
                             ]
                         );
+
+                        if(!is_null($importedTestCase)){
+                            $importedTestCaseInsert = new ImportedTestCase();
+                            $importedTestCaseInsert['testCaseId'] = $request['testCaseId'];
+                            $importedTestCaseInsert['importedTestCaseId'] = $importedTestCase['importedTestCaseId'];
+                            $importedTestCaseInsert['importOrder'] = $newOrderNumber;
+                            $importedTestCaseInsert->save();
+                        }
                     }
                 }          
             }
@@ -64,22 +94,24 @@ class TestStepsController extends Controller
             ]);
 
         try {
-            // Create a new test step, then reassign it to the test case step order.
-            // We do not update the existing test steps.
-            $newTestStep = new TestStep();
-            $newTestStep['testCaseId'] = $request['testCaseId'];
-            $newTestStep['description'] = $request['description'];
-            $newTestStep['expected'] = $request['expected'];
-            $newTestStep->save();
-
             $updateStepOrder = TestCaseTestStepOrder::where('testCaseId','=',$request['testCaseId'])
                 ->where('testStepId','=',$request['testStepId'])
                 ->first();
 
-            if($updateStepOrder){
+            if(!is_null($updateStepOrder)){
+                // Create a new test step, then reassign it to the test case step order.
+                // We do not update the existing test steps, as historical executions may point to it.
+                $newTestStep = new TestStep();
+                $newTestStep['testCaseId'] = $request['testCaseId'];
+                $newTestStep['description'] = $request['description'];
+                $newTestStep['expected'] = $request['expected'];
+                $newTestStep->save();
+
                 $updateStepOrder->update([
                     'testStepId' => $newTestStep->testStepId
                 ]);
+            }else{
+                return response()->json(['result' => 'Unable to find test step.'], 500);
             }
 
             // Pull the test case object with all children for return.
@@ -90,7 +122,7 @@ class TestStepsController extends Controller
 
         } catch (Exception $e) {
             return response()->json(
-                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to create test step.']], 500
+                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to update test step.']], 500
             );        
         }
     }
