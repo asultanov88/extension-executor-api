@@ -124,44 +124,7 @@ class TestStepsController extends Controller
             }
 
             // Check if test case already contains $request['order'].
-            $checkExistingOrder = TestCaseTestStepOrder::where('testCaseId','=',$request['testCaseId'])
-                                  ->where('order','=',$request['order'])
-                                  ->first();
-
-            // Order exists, need to update all orders of this test case.
-            if(!is_null($checkExistingOrder)){
-                // Select and store existing imported test cases in memory.
-                $importedTestCases = ImportedTestCase::where('testCaseId','=',$request['testCaseId'])
-                                     ->where('importOrder','>=',$request['order'])
-                                     ->get();
-
-                // Delete existing imported test cases to remove FK references.
-                ImportedTestCase::where('testCaseId','=',$request['testCaseId'])
-                ->where('importOrder','>=',$request['order'])
-                ->delete();
-
-                // Select all existgin test step orders (including imported test case orders).
-                $existingTestStepOrders = TestCaseTestStepOrder::where('testCaseId','=',$request['testCaseId'])
-                                          ->where('order','>=',$request['order'])
-                                          ->orderBy('test_case_test_step_orders.order','DESC')
-                                          ->get();
-
-                // increment each order to make a room for the new insert.
-                foreach ($existingTestStepOrders as $stepOrder) {
-                    $stepOrder->update([
-                        'order' => $stepOrder['order'] + 1
-                    ]);
-                }
-
-                // reinsert imported test cases by incrementing importOrder.
-                foreach ($importedTestCases as $import){ 
-                    $importedTestCase = new ImportedTestCase();
-                    $importedTestCase['testCaseId'] = $request['testCaseId'];
-                    $importedTestCase['importedTestCaseId'] = $import['importedTestCaseId'];
-                    $importedTestCase['importOrder'] = $import['importOrder'] + 1;
-                    $importedTestCase->save();
-                }
-            }
+            $this->incrementTestStepOrder($request['testCaseId'], $request['order']);
 
             $testCaseTestStepOrder = new TestCaseTestStepOrder();
             $testCaseTestStepOrder['testCaseId'] = $request['testCaseId'];
@@ -196,7 +159,9 @@ class TestStepsController extends Controller
             'order'=>'required|integer|min:1',
             ]);
 
-        try {         
+        try {   
+            $this->incrementTestStepOrder($request['testCaseId'], $request['order']);
+                  
             // Save the new test step. 
             $testStep = new TestStep();
             $testStep['description'] = $request['description'];
@@ -204,19 +169,6 @@ class TestStepsController extends Controller
             $testStep['testCaseId'] = $request['testCaseId'];
             $testStep->save();
             $newTestStepId = $testStep->testStepId;
-
-            // Get the test step orders greater than $request['order'].
-            $testStepsOrder = TestCaseTestStepOrder::where('testCaseId','=',$request['testCaseId'])
-                                ->where('order','>=',$request['order'])
-                                ->orderBy('test_case_test_step_orders.order','DESC')
-                                ->get();
-
-            // increment each order to make a room for the new insert.
-            foreach ($testStepsOrder as $stepOrder) {
-                $stepOrder->update([
-                    'order' => $stepOrder['order'] + 1
-                ]);
-            }
 
             // Insert the new step order number for the new test step.
             $newTestCaseTestStepOrder = new TestCaseTestStepOrder();
@@ -235,6 +187,41 @@ class TestStepsController extends Controller
             return response()->json(
                 env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to create test step.']], 500
               );        
+        }
+    }
+
+    // Increments test step order to make a room for the new insert.
+    private function incrementTestStepOrder($testCaseId, $order){
+        // Select and store existing imported test cases in memory.
+        $importedTestCases = ImportedTestCase::where('testCaseId','=',$testCaseId)
+        ->where('importOrder','>=',$order)
+        ->get();
+
+        // Delete existing imported test cases to remove FK references.
+        ImportedTestCase::where('testCaseId','=',$testCaseId)
+        ->where('importOrder','>=',$order)
+        ->delete();
+
+        // Select all existing test step orders (including imported test case orders).
+        $existingTestStepOrders = TestCaseTestStepOrder::where('testCaseId','=',$testCaseId)
+                    ->where('order','>=',$order)
+                    ->orderBy('test_case_test_step_orders.order','DESC')
+                    ->get();
+
+        // increment each order to make a room for the new insert.
+        foreach ($existingTestStepOrders as $stepOrder) {
+            $stepOrder->update([
+                'order' => $stepOrder['order'] + 1
+            ]);
+        }
+
+        // reinsert imported test cases by incrementing importOrder.
+        foreach ($importedTestCases as $import){ 
+            $importedTestCase = new ImportedTestCase();
+            $importedTestCase['testCaseId'] = $testCaseId;
+            $importedTestCase['importedTestCaseId'] = $import['importedTestCaseId'];
+            $importedTestCase['importOrder'] = $import['importOrder'] + 1;
+            $importedTestCase->save();
         }
     }
 }
