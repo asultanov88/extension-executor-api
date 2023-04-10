@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Models\UserPermission;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -53,5 +54,9 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getJWTCustomClaims() {
         return [];
-    }    
+    }   
+    
+    public function userPermissions(){
+        return $this->hasMany(UserPermission::class, 'userId', 'id');
+    }
 }
