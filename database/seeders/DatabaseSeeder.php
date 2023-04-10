@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             TestCaseSeeder::class,
             TestStepSeeder::class,
             TestCaseTestStepOrderSeeder::class,
+            UserSeeder::class,
         ]);
         Schema::enableForeignKeyConstraints();
 
