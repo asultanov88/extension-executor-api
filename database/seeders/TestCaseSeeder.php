@@ -24,6 +24,7 @@ class TestCaseSeeder extends Seeder
                 'testCaseId'=>1,
                 'title'=>'Test case 1',
                 'createdBy'=>1,
+                'lastUpdatedBy'=>1,
                 'deleted'=>0,
                 'created_at'=>Carbon::now(),
                 'updated_at'=>Carbon::now(),
@@ -31,7 +32,8 @@ class TestCaseSeeder extends Seeder
             [
                 'testCaseId'=>2,
                 'title'=>'Test case 2',
-                'createdBy'=>2,
+                'createdBy'=>1,
+                'lastUpdatedBy'=>1,
                 'deleted'=>0,
                 'created_at'=>Carbon::now(),
                 'updated_at'=>Carbon::now(),

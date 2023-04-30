@@ -16,8 +16,9 @@ class CreateTestCasesTable extends Migration
         Schema::create('test_cases', function (Blueprint $table) {
             $table->id('testCaseId')->index();
             $table->string('title', 500);
-            $table->integer('createdBy')->nullable();
             $table->boolean('deleted')->default('0');
+            $table->foreignId('createdBy')->references('id')->on('users');
+            $table->foreignId('lastUpdatedBy')->references('id')->on('users');
             $table->timestamps();
         });
     }

@@ -53,7 +53,8 @@ class TestCaseController extends Controller
         try {
             $testCase = TestCase::where('testCaseId','=',$request['testCaseId'])->first();
             $testCase->update([
-                'title' => $request['title']
+                'title' => $request['title'],
+                'lastUpdatedBy' => $request->user['userProfileId'],
             ]);
 
             $updatedTestCase = $this->getTestCaseDetailsById($request['testCaseId']);
@@ -74,6 +75,8 @@ class TestCaseController extends Controller
         try {
             $testCase = new TestCase();
             $testCase['title'] = $request['title'];
+            $testCase['createdBy'] = $request->user['userProfileId'];            
+            $testCase['lastUpdatedBy'] = $request->user['userProfileId'];            
             $testCase->save();
             $newTestCase = TestCase::where('testCaseId','=',$testCase->testCaseId)->first();
             
@@ -110,14 +113,14 @@ class TestCaseController extends Controller
      * Gets test case with nested objects by test case id.
      * Used internally, not linked to API endpoint.
      */
-    public function getTestCaseDetailsById($testCaseId){
+    public static function getTestCaseDetailsById($testCaseId){
         $testCase = TestCaseController::getTestCaseDetails($testCaseId);
         // Imported test cases are stored in static variable to provide flat array.
         $testCase['importedTestCases'] = TestCaseController::$importedTestCases;
         return $testCase;
     }
 
-    private function getTestCaseDetails($testCaseId){
+    private static function getTestCaseDetails($testCaseId){
         $testCase = TestCase::where('testCaseId','=',$testCaseId)->first();
         $modifiedTestStepOrders = TestCaseTestStepOrder::with('testStep')
                                 ->leftJoin('imported_test_cases', function($join)

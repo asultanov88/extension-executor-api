@@ -6,6 +6,7 @@ use App\Http\Controllers\TestCaseController;
 use App\Http\Controllers\TestStepsController;
 use App\Http\Controllers\TestCaseTestStepOrderController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,14 +30,17 @@ Route::group([
     Route::get('/user-profile', [AuthController::class, 'userProfile']);    
 });
 
-Route::post('/test-case', [TestCaseController::class, 'postTestCase']);
-Route::patch('/test-case', [TestCaseController::class, 'patchTestCase']);
-Route::post('/test-step', [TestStepsController::class, 'postTestStep']);
-Route::patch('/test-step', [TestStepsController::class, 'patchTestStep']);
-Route::delete('/test-step', [TestStepsController::class, 'deleteTestStep']);
-Route::post('/import-test-case', [TestStepsController::class, 'postImportedTestCase']);
-Route::post('/step-order-change', [TestCaseTestStepOrderController::class, 'postStepOrderChange']);
-Route::get('/test-case', [TestCaseController::class, 'getTestCase']);
-Route::get('/test-case-search', [TestCaseController::class, 'getTestCaseSearch']);
+Route::middleware(['auth','userProfile'])->post('/test-case', [TestCaseController::class, 'postTestCase']);
+Route::middleware(['auth','userProfile'])->patch('/test-case', [TestCaseController::class, 'patchTestCase']);
+Route::middleware(['auth','userProfile'])->post('/test-step', [TestStepsController::class, 'postTestStep']);
+Route::middleware(['auth','userProfile'])->patch('/test-step', [TestStepsController::class, 'patchTestStep']);
+Route::middleware(['auth','userProfile'])->delete('/test-step', [TestStepsController::class, 'deleteTestStep']);
+Route::middleware(['auth','userProfile'])->post('/import-test-case', [TestStepsController::class, 'postImportedTestCase']);
+Route::middleware(['auth','userProfile'])->post('/step-order-change', [TestCaseTestStepOrderController::class, 'postStepOrderChange']);
+Route::middleware(['auth','userProfile'])->get('/test-case', [TestCaseController::class, 'getTestCase']);
+Route::middleware(['auth','userProfile'])->get('/test-case-search', [TestCaseController::class, 'getTestCaseSearch']);
+
+// User
+Route::middleware(['auth','userProfile'])->post('/user', [UserController::class, 'postUser']);
 
 
