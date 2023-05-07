@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\TestCase;
 use App\Models\TestCaseTestStepOrder;
+use App\Models\DirectoryTestCase;
 use Exception;
 
 class TestCaseController extends Controller
@@ -39,7 +40,7 @@ class TestCaseController extends Controller
             json(['result' => $result], 200);
         } catch (Exception $e) {
             return response()->json(
-                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to update test case.']], 500
+                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to search for test case.']], 500
               );        
         }
     }
@@ -71,6 +72,7 @@ class TestCaseController extends Controller
     public function postTestCase(Request $request){
         $request->validate([
             'title'=>'required|max:500',
+            'directoryId'=>'required|integer|exists:directories,directoryId',
         ]);
         try {
             $testCase = new TestCase();
@@ -79,12 +81,18 @@ class TestCaseController extends Controller
             $testCase['lastUpdatedBy'] = $request->user['userProfileId'];            
             $testCase->save();
             $newTestCase = TestCase::where('testCaseId','=',$testCase->testCaseId)->first();
+
+            // Insert to directory test cases.
+            $directoryTestCase = new DirectoryTestCase();
+            $directoryTestCase['testCaseId'] = $newTestCase['testCaseId'];
+            $directoryTestCase['directoryId'] = $request['directoryId'];
+            $directoryTestCase->save();
             
             return response()->
             json(['result' => $newTestCase], 200);
         } catch (Exception $e) {
             return response()->json(
-                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to create project.']], 500
+                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to create test case.']], 500
               );        
         }
     }
@@ -104,7 +112,7 @@ class TestCaseController extends Controller
             
         } catch (Exception $e) {
             return response()->json(
-                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to create project.']], 500
+                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to get the test case']], 500
               );        
         }
     }

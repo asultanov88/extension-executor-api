@@ -7,6 +7,7 @@ use App\Http\Controllers\TestStepsController;
 use App\Http\Controllers\TestCaseTestStepOrderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DirectoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,5 +43,12 @@ Route::middleware(['auth','userProfile'])->get('/test-case-search', [TestCaseCon
 
 // User
 Route::middleware(['auth','userProfile'])->post('/user', [UserController::class, 'postUser']);
+
+// Directories and Projects
+Route::middleware(['auth','userProfile'])->get('/project-directories', [DirectoryController::class, 'getProjectsDirectories']);
+Route::middleware(['auth','userProfile'])->post('/project', [DirectoryController::class, 'postProject']);
+Route::middleware(['auth','userProfile'])->get('/projects', [DirectoryController::class, 'getAllProjects']);
+Route::middleware(['auth','userProfile'])->post('/assign-user-project', [DirectoryController::class, 'postUserProject']);
+Route::middleware(['auth','userProfile'])->post('/directory', [DirectoryController::class, 'postDirectory']);
 
 
