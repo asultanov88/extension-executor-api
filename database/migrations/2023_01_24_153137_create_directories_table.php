@@ -18,6 +18,7 @@ class CreateDirectoriesTable extends Migration
             $table->string('name');
             $table->boolean('isProject')->default('0');
             $table->foreignId('parentDirectoryId')->nullable()->references('directoryId')->on('directories');
+            $table->foreignId('projectId')->nullable()->references('directoryId')->on('directories');
         });
     }
 

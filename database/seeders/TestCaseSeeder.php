@@ -26,6 +26,7 @@ class TestCaseSeeder extends Seeder
                 'createdBy'=>1,
                 'lastUpdatedBy'=>1,
                 'deleted'=>0,
+                'projectId'=>1,
                 'created_at'=>Carbon::now(),
                 'updated_at'=>Carbon::now(),
             ],
@@ -35,6 +36,7 @@ class TestCaseSeeder extends Seeder
                 'createdBy'=>1,
                 'lastUpdatedBy'=>1,
                 'deleted'=>0,
+                'projectId'=>3,
                 'created_at'=>Carbon::now(),
                 'updated_at'=>Carbon::now(),
             ]

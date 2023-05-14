@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\TestCase;
 use App\Models\TestCaseTestStepOrder;
 use App\Models\DirectoryTestCase;
+use App\Models\UserProject;
+use App\Models\Directory;
 use Exception;
 
 class TestCaseController extends Controller
@@ -21,16 +23,22 @@ class TestCaseController extends Controller
             'includeDeleted'=>'required|boolean',
         ]);
 
+        // Only test cases that belong to the user projects are returned.
+        $userProjects = UserProject::where('userProfileId','=',$request->user['userProfileId'])->orderBy('projectId', 'ASC')->get()->toArray();
+        $userProjectIds = array_column($userProjects, 'projectId');
+
         try {
             $result = null;
             if(!$request['includeDeleted']){
                 $result = TestCase::where('title','like', '%'.$request['title'].'%')
+                    ->whereIn('projectId', $userProjectIds)
                     ->where('deleted','=','0')
                     ->limit(10)
                     ->orderBy('title','asc')
                     ->get();
             }else{
                 $result = TestCase::where('title','like', '%'.$request['title'].'%')
+                ->whereIn('projectId', $userProjectIds)
                 ->limit(10)
                 ->orderBy('title','asc')
                 ->get();
@@ -73,10 +81,21 @@ class TestCaseController extends Controller
         $request->validate([
             'title'=>'required|max:500',
             'directoryId'=>'required|integer|exists:directories,directoryId',
+            'projectId'=>'required|integer|exists:directories,directoryId',
         ]);
+        
+        // Check if project exists.
+        $project = Directory::where('directoryId','=',$request['projectId'])->where('isProject','=',1)->first();
+        if(is_null($project)){
+            return response()->json(
+                ['result' => ['message' => 'Project Id is invalid.']]
+              );  
+        }
+
         try {
             $testCase = new TestCase();
             $testCase['title'] = $request['title'];
+            $testCase['projectId'] = $request['projectId'];
             $testCase['createdBy'] = $request->user['userProfileId'];            
             $testCase['lastUpdatedBy'] = $request->user['userProfileId'];            
             $testCase->save();

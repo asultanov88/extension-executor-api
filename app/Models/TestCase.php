@@ -16,6 +16,7 @@ class TestCase extends Model
         'title',
         'createdBy',
         'deleted',
+        'projectId',
     ];
     public function testStepsOrder(){
         return $this->hasMany(TestCaseTestStepOrder::class, 'testCaseId', 'testCaseId');

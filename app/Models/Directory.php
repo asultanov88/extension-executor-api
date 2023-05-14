@@ -16,5 +16,6 @@ class Directory extends Model
         'name',
         'isProject',
         'parentDirectoryId',
+        'projectId',
     ];
 }

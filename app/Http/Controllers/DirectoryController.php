@@ -17,7 +17,16 @@ class DirectoryController extends Controller
         $request->validate([
             'name'=>'required|min:2|max:255',
             'parentDirectoryId'=>'required|integer|exists:directories,directoryId',
+            'projectId'=>'required|integer|exists:directories,directoryId',
         ]);
+
+        // Check if project exists.
+        $project = Directory::where('directoryId','=',$request['projectId'])->where('isProject','=',1)->first();
+        if(is_null($project)){
+            return response()->json(
+                ['result' => ['message' => 'Project Id is invalid.']]
+              );  
+        }
 
         // Check if duplicate directory exists withih the same parent.
         $duplicate = Directory::where('parentDirectoryId','=',$request['parentDirectoryId'])->where('name','=',$request['name'])->first();
@@ -32,6 +41,7 @@ class DirectoryController extends Controller
             $directory['name'] = $request['name'];
             $directory['isProject'] = 0;
             $directory['parentDirectoryId'] = $request['parentDirectoryId'];
+            $directory['projectId'] = $request['projectId'];
             $directory->save();
 
             $refreshDirectories = DirectoryController::getProjectsDirectories($request);
@@ -126,6 +136,7 @@ class DirectoryController extends Controller
             $project['name'] = $request['name'];
             $project['isProject'] = 1;            
             $project['parentDirectoryId'] = null;            
+            $project['projectId'] = null;            
             $project->save();
             
             return response()->
