@@ -169,7 +169,7 @@ class DirectoryController extends Controller
     private static function getDirectory($directoryId){
         $directory = Directory::where('directoryId','=',$directoryId)->first();
         if(!is_null($directory)){
-            $childDirectories = Directory::where('parentDirectoryId','=',$directory['directoryId'])->orderBy('name', 'DESC')->get();
+            $childDirectories = Directory::where('parentDirectoryId','=',$directory['directoryId'])->orderBy('name', 'ASC')->get();
             $childDirResult = [];
             foreach($childDirectories as $childDirectory){                
                 array_push($childDirResult, DirectoryController::getDirectory($childDirectory['directoryId']));
