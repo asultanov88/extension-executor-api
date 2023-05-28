@@ -57,14 +57,53 @@ class TestCaseController extends Controller
         $request->validate([
             'testCaseId'=>'required|integer|exists:test_cases,testCaseId',
             'title'=>'required|max:500',
+            'projectId'=>'required|integer|exists:directories,directoryId',
+            'directoryId'=>'required|integer|exists:directories,directoryId',
         ]);
+
+        // Check if user has access to this project.
+        $userProject = UserProject::where('userProfileId','=',$request->user['userProfileId'])
+                                  ->where('projectId','=',$request['projectId'])
+                                  ->first();
+        if(is_null($userProject)){
+            return response()->json(
+                ['result' => ['message' => 'User has no access to this project.']]
+                );  
+        }
+
+        // Check if project exists.
+        $project = Directory::where('directoryId','=',$request['projectId'])->where('isProject','=',1)->first();
+        if(is_null($project)){
+            return response()->json(
+                ['result' => ['message' => 'Project Id is invalid.']]
+                );  
+        }
+
+        // Check is directoryId and projectId are related.
+        $projectDirectory = Directory::where('directoryId','=',$request['directoryId'])->first();
+        if((is_null($projectDirectory['projectId']) && $projectDirectory['directoryId'] !== $request['projectId'])
+            || (!is_null($projectDirectory['projectId']) && $projectDirectory['projectId'] !== $request['projectId'])
+        ){
+            return response()->json(
+                    ['result' => ['message' => 'Project Id and directory Id are not related.']]
+                ); 
+        }       
 
         try {
             $testCase = TestCase::where('testCaseId','=',$request['testCaseId'])->first();
             $testCase->update([
                 'title' => $request['title'],
+                'projectId' => $request['projectId'],
                 'lastUpdatedBy' => $request->user['userProfileId'],
             ]);
+            
+            // Delete from the existing directory.
+            DirectoryTestCase::where('testCaseId','=',$request['testCaseId'])->delete();
+            // Insert into new directory.
+            $directoryTestCase = new DirectoryTestCase();
+            $directoryTestCase['directoryId'] = $request['directoryId'];
+            $directoryTestCase['testCaseId'] = $request['testCaseId'];
+            $directoryTestCase->save();
 
             $updatedTestCase = $this->getTestCaseDetailsById($request['testCaseId']);
 
