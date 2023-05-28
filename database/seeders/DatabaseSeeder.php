@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             DirectorySeeder::class,
             UserProjectsSeeder::class,
             DirectoryTestCaseSeeder::class,
+            StatusSeeder::class,
         ]);
         Schema::enableForeignKeyConstraints();
 
