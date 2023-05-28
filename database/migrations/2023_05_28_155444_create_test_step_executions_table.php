@@ -17,8 +17,9 @@ class CreateTestStepExecutionsTable extends Migration
             $table->id('testStepExecutionId')->index();
             $table->foreignId('testCaseExecutionId')->references('testCaseExecutionId')->on('test_case_executions');
             $table->foreignId('testStepId')->references('testStepId')->on('test_steps');
-            $table->foreignId('resultId')->nullable()->references('resultId')->on('results');
+            $table->foreignId('resultId')->references('resultId')->on('results');
             $table->integer('sequence');
+            $table->longtext('actualResult')->nullable();
             $table->timestamps();
         });
     }

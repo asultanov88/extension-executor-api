@@ -8,6 +8,7 @@ use App\Models\TestCaseTestStepOrder;
 use App\Models\DirectoryTestCase;
 use App\Models\UserProject;
 use App\Models\Directory;
+use App\Models\TestCaseExecution;
 use Exception;
 
 class TestCaseController extends Controller
@@ -183,6 +184,20 @@ class TestCaseController extends Controller
         $testCase = TestCaseController::getTestCaseDetails($testCaseId);
         // Imported test cases are stored in static variable to provide flat array.
         $testCase['importedTestCases'] = TestCaseController::$importedTestCases;
+        $testCase['executionHistory'] = TestCaseExecution::where('testCaseId','=',$testCaseId)
+                                        ->leftJoin('results','test_case_executions.resultId','=','results.resultId')
+                                        ->leftJoin('statuses','test_case_executions.statusId','=','statuses.statusId')
+                                        ->leftJoin('users','test_case_executions.executedBy','=','users.id')
+                                        ->get([
+                                            'test_case_executions.testCaseExecutionId',
+                                            'test_case_executions.created_at',
+                                            'test_case_executions.updated_at',
+                                            'results.description AS result',
+                                            'statuses.description AS status',
+                                            'users.firstName',
+                                            'users.lastName',
+                                        ]);
+        
         return $testCase;
     }
 

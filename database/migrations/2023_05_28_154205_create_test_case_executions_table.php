@@ -17,7 +17,7 @@ class CreateTestCaseExecutionsTable extends Migration
             $table->id('testCaseExecutionId')->index();
             $table->foreignId('testCaseId')->references('testCaseId')->on('test_cases');
             $table->foreignId('statusId')->references('statusId')->on('statuses');
-            $table->foreignId('resultId')->nullable()->references('resultId')->on('results');
+            $table->foreignId('resultId')->references('resultId')->on('results');
             $table->foreignId('executedBy')->references('id')->on('users');
             $table->timestamps();
         });

@@ -31,6 +31,10 @@ class StatusSeeder extends Seeder
                 'statusId'=>3,
                 'description'=>'Cancelled',
             ],
+            [
+                'statusId'=>4,
+                'description'=>'Not executed',
+            ],
         ];
 
         Status::insert($statuses);

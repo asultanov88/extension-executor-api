@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class TestStepExecution extends Model
 {
     use HasFactory;
+    protected $table='test_step_executions';
+    protected $primaryKey = 'testStepExecutionId';
+    protected $fillable=[
+        'testStepExecutionId',
+        'testCaseExecutionId',
+        'testStepId',
+        'resultId',
+        'sequence',
+    ];
 }

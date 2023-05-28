@@ -20,16 +20,20 @@ class ResultSeeder extends Seeder
         Result::truncate();
         $results = [
             [
-                'statusId'=>1,
+                'resultId'=>1,
                 'description'=>'Pass',
             ],
             [
-                'statusId'=>2,
+                'resultId'=>2,
                 'description'=>'Fail',
             ],
             [
-                'statusId'=>3,
+                'resultId'=>3,
                 'description'=>'Skip',
+            ],
+            [
+                'resultId'=>4,
+                'description'=>'Not executed',
             ],
         ];
 
