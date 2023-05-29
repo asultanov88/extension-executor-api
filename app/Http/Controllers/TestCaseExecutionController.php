@@ -23,6 +23,19 @@ class TestCaseExecutionController extends Controller
         try {
             $testCaseExecutionDetails = TestCaseExecutionController::getTestExecutionDetails($request['testCaseExecutionId']);
 
+            // Compare executionTestStepIds with the actual testStepIds, if they are different, add message to the result.
+            $executionTestStepIds = array_map(function($testStep) { return $testStep['testStepId'];}, $testCaseExecutionDetails['executionSteps']);
+            $testCase = TestCaseController::getTestCaseDetailsById($testCaseExecutionDetails['testCaseExecution']['testCaseId']);
+            // Reset the static variable to get new ids.
+            TestCaseExecutionController::$testStepIdsForExecution = [];
+            TestCaseExecutionController::$importedTestCases = $testCase['importedTestCases'];
+            TestCaseExecutionController::parseTestSteps($testCase['testStepOrder']);
+            $testCaseTestStepIds = TestCaseExecutionController::$testStepIdsForExecution;
+
+            if($executionTestStepIds !== $testCaseTestStepIds){
+                $testCaseExecutionDetails['message'] = 'Test case has been changed since this execution. Please initiate a new execution to apply the latest test case changes.';
+            }
+
             return response()->
             json(['result' => $testCaseExecutionDetails], 200);
         } catch (Exception $e) {
@@ -117,7 +130,7 @@ class TestCaseExecutionController extends Controller
                                     'test_steps.testStepId',
                                     'test_steps.description',
                                     'test_steps.expected',                                        
-                                    ]);
+                                    ])->toArray();
 
         $result = [
             'testCaseExecution' =>  $testCaseExecution,
