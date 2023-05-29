@@ -90,9 +90,9 @@ class TestCaseExecutionController extends Controller
 
         $testCaseExecution = TestCaseExecution::where('testCaseExecutionId','=',$testCaseExecutionId)
                                 ->join('test_cases','test_cases.testCaseId','=','test_case_executions.testCaseId')
-                                ->leftJoin('results','test_case_executions.resultId','=','results.resultId')
-                                ->leftJoin('statuses','test_case_executions.statusId','=','statuses.statusId')
-                                ->leftJoin('users','test_case_executions.executedBy','=','users.id')
+                                ->join('results','test_case_executions.resultId','=','results.resultId')
+                                ->join('statuses','test_case_executions.statusId','=','statuses.statusId')
+                                ->join('users','test_case_executions.executedBy','=','users.id')
                                 ->first([
                                     'test_case_executions.testCaseExecutionId',
                                     'test_case_executions.testCaseId',
@@ -107,7 +107,7 @@ class TestCaseExecutionController extends Controller
 
         $testStepsForExecution = TestStepExecution::where('testCaseExecutionId','=',$testCaseExecutionId)
                                     ->join('test_steps','test_steps.testStepId','=','test_step_executions.testStepId')
-                                    ->leftJoin('results','test_step_executions.resultId','=','results.resultId')
+                                    ->join('results','test_step_executions.resultId','=','results.resultId')
                                     ->orderBy('test_step_executions.sequence', 'ASC')
                                     ->get([
                                     'test_step_executions.testStepExecutionId',
