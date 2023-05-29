@@ -21,7 +21,6 @@ class TestCaseExecutionController extends Controller
         ]);
 
         try {
-
             $testCaseExecutionDetails = TestCaseExecutionController::getTestExecutionDetails($request['testCaseExecutionId']);
 
             return response()->
@@ -42,6 +41,13 @@ class TestCaseExecutionController extends Controller
         ]);
 
         try {
+            // Check if test case has any test steps. Empty test cases cannot be executed.
+            $testCase = TestCaseController::getTestCaseDetailsById($request['testCaseId']);
+            if(count($testCase['testStepOrder']) < 1){
+                return response()->json(
+                    ['result' => ['message' => 'Unable to execute empty test case.']], 500
+                  );  
+            }
 
             // Insert TestCaseExecution.
             $testCaseExecution = new TestCaseExecution();
@@ -53,7 +59,6 @@ class TestCaseExecutionController extends Controller
             $testCaseExecutionId = $testCaseExecution->testCaseExecutionId;
 
             // Insert TestStepExecution.
-            $testCase = TestCaseController::getTestCaseDetailsById($request['testCaseId']);
             TestCaseExecutionController::$importedTestCases = $testCase['importedTestCases'];
             TestCaseExecutionController::parseTestSteps($testCase['testStepOrder']);
             $sequence = 1; // Test step sequence as it shows up in test case.
