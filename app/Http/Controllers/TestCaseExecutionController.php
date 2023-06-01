@@ -32,10 +32,11 @@ class TestCaseExecutionController extends Controller
             TestCaseExecutionController::parseTestSteps($testCase['testStepOrder']);
             $testCaseTestStepIds = TestCaseExecutionController::$testStepIdsForExecution;
 
-            if($executionTestStepIds !== $testCaseTestStepIds){
-                $testCaseExecutionDetails['message'] = 'Test case has been changed since this execution. Please initiate a new execution to apply the latest test case changes.';
-            }
-
+            $testCaseExecutionDetails['message'] = 
+            $executionTestStepIds !== $testCaseTestStepIds 
+            ? 'Test case has been changed since this execution. Please initiate a new execution to apply the latest test case changes.'
+            : '';
+      
             return response()->
             json(['result' => $testCaseExecutionDetails], 200);
         } catch (Exception $e) {
