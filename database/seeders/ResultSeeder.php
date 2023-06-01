@@ -26,13 +26,9 @@ class ResultSeeder extends Seeder
             [
                 'resultId'=>2,
                 'description'=>'Fail',
-            ],
+            ],  
             [
                 'resultId'=>3,
-                'description'=>'Skip',
-            ],
-            [
-                'resultId'=>4,
                 'description'=>'Not executed',
             ],
         ];

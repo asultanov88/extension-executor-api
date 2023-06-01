@@ -13,6 +13,75 @@ class TestCaseExecutionController extends Controller
     private static $testStepIdsForExecution = array();
 
     /**
+     * Update test step execution.
+     */
+    public function patchTestStepExecution(Request $request){
+        $request->validate([
+            'testStepExecutionId'=>'required|integer|exists:test_step_executions,testStepExecutionId',
+            'result'=>'required|in:fail,pass'
+        ]);
+
+        if($request['result'] == 'fail' && is_null($request['actualResult'])){
+            return response()->json(
+                ['result' => ['message' => 'Actual result is required if test step fails.']], 500
+              ); 
+        } else if($request['result'] == 'pass' && !is_null($request['actualResult'])){
+            return response()->json(
+                ['result' => ['message' => 'Actual result must be null if step passes.']], 500
+              ); 
+        }
+
+        try {
+
+            $testStepExecution = TestStepExecution::where('testStepExecutionId','=',$request['testStepExecutionId'])
+                                    ->join('test_case_executions','test_case_executions.testCaseExecutionId','=','test_step_executions.testCaseExecutionId')
+                                    ->where('test_case_executions.executedBy','=',$request->user['userProfileId'])
+                                    ->first();
+
+            if(!is_null($testStepExecution)){
+
+                if($request['result'] == 'pass'){
+                    $testStepExecution->update([
+                        'resultId' => 1, 
+                        'actualResult' => null,
+                    ]); 
+                }else{
+                    $testStepExecution->update([
+                        'resultId' => 2,
+                        'actualResult' => $request['actualResult'] 
+                    ]); 
+                }              
+
+                $result = TestStepExecution::where('testStepExecutionId','=',$request['testStepExecutionId'])
+                            ->join('test_steps','test_steps.testStepId','=','test_step_executions.testStepId')
+                            ->join('results','test_step_executions.resultId','=','results.resultId')
+                            ->first([
+                                'test_step_executions.testStepExecutionId',
+                                'test_step_executions.sequence',
+                                'test_step_executions.actualResult',
+                                'results.description AS result',
+                                'test_steps.testStepId',
+                                'test_steps.description',
+                                'test_steps.expected',                                        
+                            ]); 
+
+                return response()->
+                json(['result' => $result], 200);
+
+            }else{
+                return response()->json(
+                    ['result' => ['message' => 'Unable to update test step execution.']], 500
+                  ); 
+            }      
+
+        } catch (Exception $e) {
+            return response()->json(
+                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to update test step execution.']], 500
+              );        
+        }
+    }
+
+    /**
      * Gets test case execution details.
      */
     public function getTestCaseExecution(Request $request){

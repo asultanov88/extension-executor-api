@@ -55,5 +55,6 @@ Route::middleware(['auth','userProfile'])->post('/directory', [DirectoryControll
 // Test Case Execution.
 Route::middleware(['auth','userProfile'])->post('/test-case-execution', [TestCaseExecutionController::class, 'postTestCaseExecution']);
 Route::middleware(['auth','userProfile'])->get('/test-case-execution', [TestCaseExecutionController::class, 'getTestCaseExecution']);
+Route::middleware(['auth','userProfile'])->patch('/test-step-execution', [TestCaseExecutionController::class, 'patchTestStepExecution']);
 
 

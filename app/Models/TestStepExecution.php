@@ -16,5 +16,6 @@ class TestStepExecution extends Model
         'testStepId',
         'resultId',
         'sequence',
+        'actualResult',
     ];
 }
