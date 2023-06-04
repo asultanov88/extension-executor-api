@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DirectoryController;
 use App\Http\Controllers\TestCaseExecutionController;
+use App\Http\Controllers\ScreenshotController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,4 +58,5 @@ Route::middleware(['auth','userProfile'])->post('/test-case-execution', [TestCas
 Route::middleware(['auth','userProfile'])->get('/test-case-execution', [TestCaseExecutionController::class, 'getTestCaseExecution']);
 Route::middleware(['auth','userProfile'])->patch('/test-step-execution', [TestCaseExecutionController::class, 'patchTestStepExecution']);
 
-
+// Screenshot.
+Route::middleware(['auth','userProfile'])->post('/test-step-screenshot', [ScreenshotController::class, 'postScreenshot']);

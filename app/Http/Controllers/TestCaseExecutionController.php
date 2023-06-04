@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\TestCaseController;
 use App\Models\TestCaseExecution;
 use App\Models\TestStepExecution;
+use App\Models\TestStepExecutionScreenshot;
 
 class TestCaseExecutionController extends Controller
 {
@@ -63,7 +64,7 @@ class TestCaseExecutionController extends Controller
                                 'test_steps.testStepId',
                                 'test_steps.description',
                                 'test_steps.expected',                                        
-                            ]); 
+                            ]);            
 
                 return response()->
                 json(['result' => $result], 200);
@@ -136,7 +137,7 @@ class TestCaseExecutionController extends Controller
             $testCaseExecution = new TestCaseExecution();
             $testCaseExecution['testCaseId'] = $request['testCaseId'];
             $testCaseExecution['statusId'] = 4; // not executed test case.
-            $testCaseExecution['resultId'] = 4; // not executed test case.
+            $testCaseExecution['resultId'] = 3; // not executed test case.
             $testCaseExecution['executedBy'] = $request->user['userProfileId'];
             $testCaseExecution->save();
             $testCaseExecutionId = $testCaseExecution->testCaseExecutionId;
@@ -149,7 +150,7 @@ class TestCaseExecutionController extends Controller
                 $testStepExecution = new TestStepExecution();
                 $testStepExecution['testCaseExecutionId'] = $testCaseExecutionId;
                 $testStepExecution['testStepId'] = $testStepId;
-                $testStepExecution['resultId'] = 4; // not executed step.
+                $testStepExecution['resultId'] = 3; // not executed step.
                 $testStepExecution['sequence'] = $sequence;
                 $testStepExecution->save();
                 $sequence++; // Increment $sequence for each step.
@@ -199,8 +200,25 @@ class TestCaseExecutionController extends Controller
                                     'results.description AS result',
                                     'test_steps.testStepId',
                                     'test_steps.description',
-                                    'test_steps.expected',                                        
+                                    'test_steps.expected',
                                     ])->toArray();
+
+        $executionIdsArr = array_map(function($testStepExecution) { return $testStepExecution['testStepExecutionId'];}, $testStepsForExecution);
+
+        // Pull the screenshots of each test step execution.
+        $screenshots = TestStepExecutionScreenshot::whereIn('testStepExecutionId',$executionIdsArr)->get()->toArray();
+        foreach($testStepsForExecution as &$stepExecution){
+            $stepScreenshotsArr = array_filter($screenshots, function($screenshot) use ($stepExecution){ 
+                return $screenshot['testStepExecutionId'] == $stepExecution['testStepExecutionId'];                 
+            });
+            // unset testStepExecutionId from screenshot object.
+            if(count($stepScreenshotsArr) > 0){
+                foreach($stepScreenshotsArr as &$item){
+                    unset($item['testStepExecutionId']);
+                }
+            }
+            $stepExecution['screenshots'] = count($stepScreenshotsArr) > 0 ? $stepScreenshotsArr : [];
+        }
 
         $result = [
             'testCaseExecution' =>  $testCaseExecution,
