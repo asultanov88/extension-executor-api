@@ -60,3 +60,5 @@ Route::middleware(['auth','userProfile'])->patch('/test-step-execution', [TestCa
 
 // Screenshot.
 Route::middleware(['auth','userProfile'])->post('/test-step-screenshot', [ScreenshotController::class, 'postScreenshot']);
+Route::middleware(['auth','userProfile'])->delete('/test-step-screenshot', [ScreenshotController::class, 'deleteScreenshot']);
+Route::middleware(['auth','userProfile'])->get('/test-step-screenshot', [ScreenshotController::class, 'getScreenshot']);
