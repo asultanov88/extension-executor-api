@@ -65,7 +65,7 @@ class ScreenshotController extends Controller
                 // Delete the screenshot.
                 Screenshot::where('screenshotId','=',$request['screenshotId'])->delete();
 
-                return response()->json(['result' => 'success'], 200);
+                return response()->json(['result' => ['message' => 'success']], 200);
 
             }else{
                 return response()->
