@@ -10,6 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DirectoryController;
 use App\Http\Controllers\TestCaseExecutionController;
 use App\Http\Controllers\ScreenshotController;
+use App\Http\Controllers\EventController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,8 +58,14 @@ Route::middleware(['auth','userProfile'])->post('/directory', [DirectoryControll
 Route::middleware(['auth','userProfile'])->post('/test-case-execution', [TestCaseExecutionController::class, 'postTestCaseExecution']);
 Route::middleware(['auth','userProfile'])->get('/test-case-execution', [TestCaseExecutionController::class, 'getTestCaseExecution']);
 Route::middleware(['auth','userProfile'])->patch('/test-step-execution', [TestCaseExecutionController::class, 'patchTestStepExecution']);
+Route::middleware(['auth','userProfile'])->patch('/test-case-status', [TestCaseExecutionController::class, 'patchTestExecutionStatus']);
 
 // Screenshot.
 Route::middleware(['auth','userProfile'])->post('/test-step-screenshot', [ScreenshotController::class, 'postScreenshot']);
 Route::middleware(['auth','userProfile'])->delete('/test-step-screenshot', [ScreenshotController::class, 'deleteScreenshot']);
 Route::middleware(['auth','userProfile'])->get('/test-step-screenshot', [ScreenshotController::class, 'getScreenshot']);
+
+// Event.
+Route::middleware(['auth','userProfile'])->post('/event', [EventController::class, 'postEvent']);
+Route::middleware(['auth','userProfile'])->patch('/event-status', [EventController::class, 'patchEventStatus']);
+Route::middleware(['auth','userProfile'])->post('/event-test-cases', [EventController::class, 'postTestCasesToEvent']);

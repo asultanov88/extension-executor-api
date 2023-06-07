@@ -14,6 +14,50 @@ class TestCaseExecutionController extends Controller
     private static $testStepIdsForExecution = array();
 
     /**
+     * Update test case execution status.
+     */
+    public function patchTestExecutionStatus(Request $request){
+        $request->validate([
+            'testCaseExecutionId'=>'required|integer|exists:test_case_executions,testCaseExecutionId',
+            'status'=>'required|in:complete,cancel,in-progress,not-executed',
+        ]);
+
+        try {
+   
+            $testCaseExecution = TestCaseExecution::where('testCaseExecutionId','=',$request['testCaseExecutionId'])->first();
+            $statusId = null;
+            switch ($request['status']) {
+                case 'complete':
+                    $statusId = 1;
+                    break;
+                case 'in-progress':
+                    $statusId = 2;
+                    break;
+                case 'cancel':
+                    $statusId = 3;
+                    break;
+                case 'not-executed':
+                    $statusId = 4;
+                    break;
+            }
+
+            $testCaseExecution->update([
+                'statusId' => $statusId
+            ]);
+            $testCaseExecution->refresh();
+
+            return response()->
+            json(['result' => $testCaseExecution], 200);
+
+        } catch (Exception $e) {
+            return response()->json(
+                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to set test case execution status.']], 500
+            );        
+        }
+      
+    }
+
+    /**
      * Update test step execution.
      */
     public function patchTestStepExecution(Request $request){
