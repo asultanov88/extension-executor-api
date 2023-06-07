@@ -95,19 +95,8 @@ class ScreenshotController extends Controller
 
             if(!is_null($testStepExecution)){
 
-                $blob = null;
-
-                // Check if blob has a prefix.
-                if(str_contains($request['blob'], 'base64')){
-                    $data = explode(',', $request['blob']);
-                    // removing double quotes form the beggining and end.
-                    $blob = trim($data[1],'"');
-                }else{
-                    $blob = $request['blob'];
-                }
-
                 $screenshot = new Screenshot();
-                $screenshot['blob'] = $blob;
+                $screenshot['blob'] = $request['blob'];
                 $screenshot->save();
                 $screenshot->refresh();
 
