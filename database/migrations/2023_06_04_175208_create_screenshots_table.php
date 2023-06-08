@@ -16,7 +16,7 @@ class CreateScreenshotsTable extends Migration
         Schema::create('screenshots', function (Blueprint $table) {
             $table->id('screenshotId')->index();
             $table->uuid('uuid')->default(DB::raw('(UUID())'));
-            $table->binary('blob'); 
+            $table->longtext('blob'); 
         });
     }
 
