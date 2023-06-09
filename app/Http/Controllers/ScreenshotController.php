@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\TestStepExecution;
 use App\Models\Screenshot;
 use App\Models\TestStepExecutionScreenshot;
@@ -24,6 +25,9 @@ class ScreenshotController extends Controller
 
             if(!is_null($testStepExecutionScreenshot)){
                 $screenshot = Screenshot::where('screenshotId','=',$request['screenshotId'])->first();
+                $fileName = $screenshot['uuid'].'.png';
+                $screenshot['blob'] = 'data:image/png;base64,'.base64_encode(Storage::disk('screenshots')->get($fileName));
+
                 return response()->json(['result' => $screenshot], 200);
             }else{
                 return response()->
@@ -63,7 +67,9 @@ class ScreenshotController extends Controller
                 ->delete();
 
                 // Delete the screenshot.
-                Screenshot::where('screenshotId','=',$request['screenshotId'])->delete();
+                $screenshot = Screenshot::where('screenshotId','=',$request['screenshotId'])->first();
+                Storage::disk('screenshots')->delete($screenshot['uuid'].'.png');
+                $screenshot->delete();
 
                 return response()->json(['result' => ['message' => 'success']], 200);
 
@@ -96,9 +102,13 @@ class ScreenshotController extends Controller
             if(!is_null($testStepExecution)){
 
                 $screenshot = new Screenshot();
-                $screenshot['blob'] = $request['blob'];
                 $screenshot->save();
                 $screenshot->refresh();
+
+                // Save screenshot as file.
+                $fileName = $screenshot['uuid'].'.png';
+                $decodedBlob = ScreenshotController::decodeBlob($request['blob']);
+                Storage::disk('screenshots')->put($fileName, $decodedBlob);
 
                 // Map screenshot to test step execution.
                 $testStepExecutionScreenshot = new TestStepExecutionScreenshot();
@@ -120,5 +130,17 @@ class ScreenshotController extends Controller
                 env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to upload screenshot.']], 500
             );        
         }
+    }
+
+    /**
+     * Decodes blob.
+     */    
+    private function decodeBlob($blob){
+        // $data[ 0 ] == "data:image/png;base64"
+        // $data[ 1 ] == "actual base64 string"
+        $data = explode(',', $blob);
+        // removing double quotes form the beggining and end.
+        $data_base64 = trim($data[1],'"');
+        return base64_decode($data_base64);
     }
 }
