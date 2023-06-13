@@ -185,7 +185,9 @@ class DirectoryController extends Controller
         $directoryTestCases = DirectoryTestCase::where('directoryId','=',$directoryId)->orderBy('testCaseId', 'ASC')->get();
         $testCasesResult = [];
         foreach($directoryTestCases as $directoryTestCase){
-            $testCase = TestCase::where('testCaseId','=',$directoryTestCase['testCaseId'])->first();
+            $testCase = TestCase::where('testCaseId','=',$directoryTestCase['testCaseId'])
+                                ->where('deleted','=',0)
+                                ->first();
             if(!is_null($testCase)){
                 $testCaseResult = [
                     'testCaseId' => $testCase['testCaseId'],

@@ -54,6 +54,33 @@ class TestCaseController extends Controller
         }
     }
 
+    public function deleteTestCase(Request $request){
+        $request->validate([
+            'testCaseId'=>'required|integer|exists:test_cases,testCaseId',
+        ]);
+
+        $testCase = TestCase::where('testCaseId','=',$request['testCaseId'])->first();
+        $userProject = UserProject::where('userProfileId','=',$request->user['userProfileId'])
+                                  ->where('projectId','=',$testCase['projectId'])
+                                  ->first();
+
+        try {
+            // Proceed only if user has access to the project of the test case.
+            if(!is_null($userProject)){
+                $testCase->update([
+                    'deleted' => 1
+                ]);
+                return response()->json(['result' => ['message' => 'success']], 200);
+            }else{
+                return response()->json(['result' => ['message' => 'User has no access to this project.']]); 
+            }
+        } catch (Exception $e) {
+            return response()->json(
+                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to delete test case.']], 500
+              );        
+        }
+    }
+
     public function patchTestCase(Request $request){
         $request->validate([
             'testCaseId'=>'required|integer|exists:test_cases,testCaseId',
