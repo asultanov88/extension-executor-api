@@ -11,6 +11,7 @@ use App\Http\Controllers\DirectoryController;
 use App\Http\Controllers\TestCaseExecutionController;
 use App\Http\Controllers\ScreenshotController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,3 +74,10 @@ Route::middleware(['auth','userProfile'])->get('/test-step-screenshot', [Screens
 Route::middleware(['auth','userProfile'])->post('/event', [EventController::class, 'postEvent']);
 Route::middleware(['auth','userProfile'])->patch('/event-status', [EventController::class, 'patchEventStatus']);
 Route::middleware(['auth','userProfile'])->post('/event-test-cases', [EventController::class, 'postTestCasesToEvent']);
+
+// Product.
+Route::middleware(['auth','userProfile'])->post('/product', [ProductController::class, 'postProduct']);
+Route::middleware(['auth','userProfile'])->patch('/product', [ProductController::class, 'patchProduct']);
+Route::middleware(['auth','userProfile'])->delete('/product', [ProductController::class, 'deleteProduct']);
+Route::middleware(['auth','userProfile'])->get('/product', [ProductController::class, 'getProduct']);
+Route::middleware(['auth','userProfile'])->get('/product-list', [ProductController::class, 'getProductList']);

@@ -89,6 +89,7 @@ class EventController extends Controller
         $request->validate([
             'title'=>'required|min:2|max:500',
             'description'=>'min:2|max:500',
+            'productId'=>'required|integer|exists:products,productId',
         ]);
 
         try {
@@ -98,6 +99,7 @@ class EventController extends Controller
             $event['description'] = $request['description'];
             $event['createdBy'] = $request->user['userProfileId'];
             $event['statusId'] = 4; // Not executed.
+            $event['productId'] = $request['productId'];
             $event->save();
             $event->refresh();
 

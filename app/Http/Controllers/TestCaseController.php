@@ -72,7 +72,7 @@ class TestCaseController extends Controller
                 ]);
                 return response()->json(['result' => ['message' => 'success']], 200);
             }else{
-                return response()->json(['result' => ['message' => 'User has no access to this project.']]); 
+                return response()->json(['result' => ['message' => 'User has no access to this project.']], 500); 
             }
         } catch (Exception $e) {
             return response()->json(

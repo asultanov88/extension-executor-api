@@ -116,7 +116,7 @@ class DirectoryController extends Controller
     }
 
     /**
-     * Create new project (Project is treated as directory with isProject=1).
+     * Create new project (Project is treated as directory with isProject=1). Hello!
      */
     public function postProject(Request $request){
         $request->validate([

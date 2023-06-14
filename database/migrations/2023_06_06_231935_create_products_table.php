@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEventsTable extends Migration
+class CreateProductsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,12 @@ class CreateEventsTable extends Migration
      */
     public function up()
     {
-        Schema::create('events', function (Blueprint $table) {
-            $table->id('eventId')->index();
-            $table->string('title', 500);
-            $table->string('description', 500);
-            $table->foreignId('productId')->references('productId')->on('products');
+        Schema::create('products', function (Blueprint $table) {
+            $table->id('productId')->index();
+            $table->string('name', 100);
+            $table->string('description', 500)->nullable();
             $table->foreignId('createdBy')->references('id')->on('users');
-            $table->foreignId('statusId')->references('statusId')->on('statuses');
+            $table->foreignId('updatedBy')->references('id')->on('users');
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ class CreateEventsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('events');
+        Schema::dropIfExists('products');
     }
 }
