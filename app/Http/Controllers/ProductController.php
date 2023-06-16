@@ -14,7 +14,7 @@ class ProductController extends Controller
     public function getProductList(Request $request){
         try {
            
-            $productList = Product::all();
+            $productList = Product::where('deleted','=',0)->get();
             return response()->json(['result' => $productList], 200);
 
         } catch (Exception $e) {
@@ -34,6 +34,7 @@ class ProductController extends Controller
 
         try {
            
+            // Only active products are returned.
             $product = Product::where('productId','=',$request['productId'])->first();
             return response()->json(['result' => $product], 200);
 
@@ -54,16 +55,12 @@ class ProductController extends Controller
 
         try {
            
-            $eventReference = Event::where('productId','=',$request['productId'])->first();
-
-            if(is_null($eventReference)){
-                Product::where('productId','=',$request['productId'])->delete();
-                return response()->json(['result' => ['message' => 'success']], 200);
-            }else{
-                return response()->json(
-                    ['result' => ['message' => 'Unable to delete product with event reference.']], 500
-                  );  
-            }
+            $product = Product::where('productId','=',$request['productId'])->first();
+            $product->update([
+                'deleted' => 1,
+                'updatedBy' => $request->user['userProfileId'],
+            ]);
+            return response()->json(['result' => ['message' => 'success']], 200);
 
         } catch (Exception $e) {
             return response()->json(
@@ -81,6 +78,17 @@ class ProductController extends Controller
             'name'=>'required|min:2|max:100',
             'description'=>'max:500',
         ]);
+
+        // Trim possible whitespaces.
+        $request['name'] = trim($request['name']);
+        $request['description'] = trim($request['description']);
+
+        // Product name must be unique.
+        if(!is_null(Product::where('name','=',$request['name'])->where('productId','!=',$request['productId'])->where('deleted','=',0)->first())){
+            return response()->json(
+                ['result' => ['message' => 'Product name already exists']], 500
+                );
+        }
         
         try {
            
@@ -108,13 +116,25 @@ class ProductController extends Controller
         $request->validate([
             'name'=>'required|min:2|max:100',
             'description'=>'max:500',
-        ]);  
+        ]);
+        
+        // Trim possible whitespaces.
+        $request['name'] = trim($request['name']);
+        $request['description'] = trim($request['description']);
+
+        // Product name must be unique.
+        if(!is_null(Product::where('name','=',$request['name'])->where('deleted','=',0)->first())){
+            return response()->json(
+                ['result' => ['message' => 'Product name must be unique']], 500
+              );
+        }
 
         try {
            
             $product = new Product();
             $product['name'] = $request['name'];
             $product['description'] = $request['description'];
+            $product['deleted'] = 0;
             $product['createdBy'] = $request->user['userProfileId'];
             $product['updatedBy'] = $request->user['userProfileId'];
             $product->save();

@@ -12,6 +12,7 @@ use App\Http\Controllers\TestCaseExecutionController;
 use App\Http\Controllers\ScreenshotController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\VersionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,3 +82,10 @@ Route::middleware(['auth','userProfile'])->patch('/product', [ProductController:
 Route::middleware(['auth','userProfile'])->delete('/product', [ProductController::class, 'deleteProduct']);
 Route::middleware(['auth','userProfile'])->get('/product', [ProductController::class, 'getProduct']);
 Route::middleware(['auth','userProfile'])->get('/product-list', [ProductController::class, 'getProductList']);
+
+// Version
+Route::middleware(['auth','userProfile'])->post('/version', [VersionController::class, 'postVersion']);
+Route::middleware(['auth','userProfile'])->patch('/version', [VersionController::class, 'patchVersion']);
+Route::middleware(['auth','userProfile'])->get('/version', [VersionController::class, 'getVersion']);
+Route::middleware(['auth','userProfile'])->delete('/version', [VersionController::class, 'deleteVersion']);
+Route::middleware(['auth','userProfile'])->get('/version-list', [VersionController::class, 'getVersionList']);
