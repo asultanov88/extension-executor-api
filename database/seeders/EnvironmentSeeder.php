@@ -3,10 +3,10 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Product;
+use App\Models\Environment;
 use Carbon\Carbon;
 
-class ProductSeeder extends Seeder
+class EnvironmentSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,16 +15,16 @@ class ProductSeeder extends Seeder
      */
     public function run()
     {
-        $this->seedProducts();
+        $this->seedEnvironments();
     }
 
-    private function seedProducts(){
-        Product::truncate();
-        $products = [
+    private function seedEnvironments(){
+        Environment::truncate();
+        $environments = [
             [
+                'environmentId'=>1,
+                'name'=>'QA',
                 'productId'=>1,
-                'name'=>'test product 1',
-                'description'=>'Test Description 1',
                 'deleted'=>0,
                 'createdBy'=>1,
                 'updatedBy'=>1,
@@ -32,9 +32,9 @@ class ProductSeeder extends Seeder
                 'updated_at'=>Carbon::now(),
             ],
             [
-                'productId'=>2,
-                'name'=>'test product 2',
-                'description'=>'Test Description 2',
+                'environmentId'=>2,
+                'name'=>'Intergration',
+                'productId'=>1,
                 'deleted'=>0,
                 'createdBy'=>1,
                 'updatedBy'=>1,
@@ -43,6 +43,6 @@ class ProductSeeder extends Seeder
             ],
         ];
 
-        Product::insert($products);
+        Environment::insert($environments);
     }
 }

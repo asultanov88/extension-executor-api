@@ -13,6 +13,7 @@ use App\Http\Controllers\ScreenshotController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\VersionController;
+use App\Http\Controllers\EnvironmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -89,3 +90,11 @@ Route::middleware(['auth','userProfile'])->patch('/version', [VersionController:
 Route::middleware(['auth','userProfile'])->get('/version', [VersionController::class, 'getVersion']);
 Route::middleware(['auth','userProfile'])->delete('/version', [VersionController::class, 'deleteVersion']);
 Route::middleware(['auth','userProfile'])->get('/version-list', [VersionController::class, 'getVersionList']);
+
+// Environment
+Route::middleware(['auth','userProfile'])->post('/environment', [EnvironmentController::class, 'postEnvironment']);
+Route::middleware(['auth','userProfile'])->patch('/environment', [EnvironmentController::class, 'patchEnvironment']);
+Route::middleware(['auth','userProfile'])->get('/environment', [EnvironmentController::class, 'getEnvironment']);
+Route::middleware(['auth','userProfile'])->delete('/environment', [EnvironmentController::class, 'deleteEnvironment']);
+Route::middleware(['auth','userProfile'])->get('/environment-list', [EnvironmentController::class, 'getEnvironmentList']);
+

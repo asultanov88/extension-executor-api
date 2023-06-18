@@ -78,8 +78,8 @@ class VersionController extends Controller
             'versionId'=>'required|integer|exists:versions,versionId',
         ]);
 
-        // Trim possible whitespaces.
-        $request['name'] = trim($request['name']);
+        // Trim possible whitespaces, force lower case.
+        $request['name'] = strtolower(trim($request['name']));
 
         // Version must be unique per product.
         if(!is_null(Version::where('productId','=',$request['productId'])
@@ -104,7 +104,7 @@ class VersionController extends Controller
             return response()->json(['result' => $version], 200);
         } catch (Exception $e) {
             return response()->json(
-                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to create version']], 500
+                env('APP_ENV') == 'local' ? $e : ['result' => ['message' => 'Unable to update version']], 500
               );        
         }        
     }
@@ -118,8 +118,8 @@ class VersionController extends Controller
             'productId'=>'required|integer|exists:products,productId',
         ]);
 
-        // Trim possible whitespaces.
-        $request['name'] = trim($request['name']);
+        // Trim possible whitespaces, force lower case.
+        $request['name'] = strtolower(trim($request['name']));
         
         // Version must be unique per product.
         if(!is_null(Version::where('productId','=',$request['productId'])

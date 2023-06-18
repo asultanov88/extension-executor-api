@@ -29,8 +29,8 @@ class DatabaseSeeder extends Seeder
             ResultSeeder::class,
             ProductSeeder::class,
             VersionSeeder::class,
+            EnvironmentSeeder::class,
         ]);
         Schema::enableForeignKeyConstraints();
-
     }
 }

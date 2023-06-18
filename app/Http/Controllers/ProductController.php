@@ -79,8 +79,8 @@ class ProductController extends Controller
             'description'=>'max:500',
         ]);
 
-        // Trim possible whitespaces.
-        $request['name'] = trim($request['name']);
+        // Trim possible whitespaces, force lower case.
+        $request['name'] = strtolower(trim($request['name']));
         $request['description'] = trim($request['description']);
 
         // Product name must be unique.
@@ -118,8 +118,8 @@ class ProductController extends Controller
             'description'=>'max:500',
         ]);
         
-        // Trim possible whitespaces.
-        $request['name'] = trim($request['name']);
+        // Trim possible whitespaces, force lower case.
+        $request['name'] = strtolower(trim($request['name']));
         $request['description'] = trim($request['description']);
 
         // Product name must be unique.
