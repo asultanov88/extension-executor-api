@@ -23,7 +23,7 @@ class EnvironmentSeeder extends Seeder
         $environments = [
             [
                 'environmentId'=>1,
-                'name'=>'QA',
+                'name'=>'qa',
                 'productId'=>1,
                 'deleted'=>0,
                 'createdBy'=>1,
@@ -33,7 +33,7 @@ class EnvironmentSeeder extends Seeder
             ],
             [
                 'environmentId'=>2,
-                'name'=>'Intergration',
+                'name'=>'intergration',
                 'productId'=>1,
                 'deleted'=>0,
                 'createdBy'=>1,
