@@ -14,6 +14,7 @@ class Event extends Model
         'eventId',
         'title',
         'description',
+        'environment',
         'createdBy',
         'statusId',
         'productId',

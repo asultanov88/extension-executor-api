@@ -11,9 +11,7 @@ use App\Http\Controllers\DirectoryController;
 use App\Http\Controllers\TestCaseExecutionController;
 use App\Http\Controllers\ScreenshotController;
 use App\Http\Controllers\EventController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\VersionController;
-use App\Http\Controllers\EnvironmentController;
+use App\Http\Controllers\DeviceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -77,24 +75,12 @@ Route::middleware(['auth','userProfile'])->post('/event', [EventController::clas
 Route::middleware(['auth','userProfile'])->patch('/event-status', [EventController::class, 'patchEventStatus']);
 Route::middleware(['auth','userProfile'])->post('/event-test-cases', [EventController::class, 'postTestCasesToEvent']);
 
-// Product.
-Route::middleware(['auth','userProfile'])->post('/product', [ProductController::class, 'postProduct']);
-Route::middleware(['auth','userProfile'])->patch('/product', [ProductController::class, 'patchProduct']);
-Route::middleware(['auth','userProfile'])->delete('/product', [ProductController::class, 'deleteProduct']);
-Route::middleware(['auth','userProfile'])->get('/product', [ProductController::class, 'getProduct']);
-Route::middleware(['auth','userProfile'])->get('/product-list', [ProductController::class, 'getProductList']);
+// Device.
+Route::middleware(['auth','userProfile'])->post('/device', [DeviceController::class, 'postDevice']);
+Route::middleware(['auth','userProfile'])->patch('/device', [DeviceController::class, 'patchDevice']);
+Route::middleware(['auth','userProfile'])->delete('/device', [DeviceController::class, 'deleteDevice']);
+Route::middleware(['auth','userProfile'])->get('/device', [DeviceController::class, 'getDevice']);
+Route::middleware(['auth','userProfile'])->get('/device-list', [DeviceController::class, 'getDeviceList']);
 
-// Version
-Route::middleware(['auth','userProfile'])->post('/version', [VersionController::class, 'postVersion']);
-Route::middleware(['auth','userProfile'])->patch('/version', [VersionController::class, 'patchVersion']);
-Route::middleware(['auth','userProfile'])->get('/version', [VersionController::class, 'getVersion']);
-Route::middleware(['auth','userProfile'])->delete('/version', [VersionController::class, 'deleteVersion']);
-Route::middleware(['auth','userProfile'])->get('/version-list', [VersionController::class, 'getVersionList']);
 
-// Environment
-Route::middleware(['auth','userProfile'])->post('/environment', [EnvironmentController::class, 'postEnvironment']);
-Route::middleware(['auth','userProfile'])->patch('/environment', [EnvironmentController::class, 'patchEnvironment']);
-Route::middleware(['auth','userProfile'])->get('/environment', [EnvironmentController::class, 'getEnvironment']);
-Route::middleware(['auth','userProfile'])->delete('/environment', [EnvironmentController::class, 'deleteEnvironment']);
-Route::middleware(['auth','userProfile'])->get('/environment-list', [EnvironmentController::class, 'getEnvironmentList']);
 
