@@ -17,7 +17,7 @@ class CreateEventsTable extends Migration
             $table->id('eventId')->index();
             $table->string('title', 500);
             $table->string('description', 500);
-            $table->foreignId('productId')->references('productId')->on('products');
+            $table->string('environment', 100);
             $table->foreignId('createdBy')->references('id')->on('users');
             $table->foreignId('statusId')->references('statusId')->on('statuses');
             $table->timestamps();
