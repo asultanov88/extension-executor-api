@@ -12,6 +12,7 @@ use App\Http\Controllers\TestCaseExecutionController;
 use App\Http\Controllers\ScreenshotController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\DeviceController;
+use App\Http\Controllers\BrowserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,5 +83,9 @@ Route::middleware(['auth','userProfile'])->delete('/device', [DeviceController::
 Route::middleware(['auth','userProfile'])->get('/device', [DeviceController::class, 'getDevice']);
 Route::middleware(['auth','userProfile'])->get('/device-list', [DeviceController::class, 'getDeviceList']);
 
-
-
+// Browser.
+Route::middleware(['auth','userProfile'])->post('/browser', [BrowserController::class, 'postBrowser']);
+Route::middleware(['auth','userProfile'])->patch('/browser', [BrowserController::class, 'patchBrowser']);
+Route::middleware(['auth','userProfile'])->delete('/browser', [BrowserController::class, 'deleteBrowser']);
+Route::middleware(['auth','userProfile'])->get('/browser', [BrowserController::class, 'getBrowser']);
+Route::middleware(['auth','userProfile'])->get('/browser-list', [BrowserController::class, 'getBrowserList']);
