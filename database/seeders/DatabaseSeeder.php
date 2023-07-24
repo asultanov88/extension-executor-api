@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             StatusSeeder::class,
             ResultSeeder::class,
             DeviceSeeder::class,
+            BrowserSeeder::class,
         ]);
         Schema::enableForeignKeyConstraints();
     }
